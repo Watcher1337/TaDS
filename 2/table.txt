@@ -1,0 +1,39 @@
+Ivan M 19 190 13.04.2014 1 Starokachalovskaya 30 43
+Svetlana F 24 236 17.04.2014 0 32 43
+Stepan M 23 264 15.04.2014 1 Svobodi 90 23
+Grigory M 26 185 12.04.2014 0 90 34
+Evgeny M 19 200 10.05.2014 1 Krapivnaya 10 25
+Irina F 20 210 17.04.2014 1 Dlinnaya 5 46
+Fedor M 23 250 13.04.2014 0 30 30
+Anna F 23 278 14.04.2014 0 54 223
+Baron M 18 225 12.04.2014 1 Svobodi 3 26
+Donatello M 20 230 13.04.2014 0 15 72
+Mars M 27 262 15.04.2014 1 Krapivnaya 10 22
+Appolo M 24 239 12.04.2014 0 80 32
+Plutus M 17 205 10.05.2014 1 Korotkaya 1 28
+Mercury M 28 216 17.04.2014 1 Dlinnaya 4 42
+Nikolay M 19 280 13.04.2014 0 10 99
+Semyon M 26 192 14.04.2014 1 Krapivnaya 3 47
+Marta F 24 276 12.04.2014 0 37 42
+Kodzima M 49 270 01.01.2019 1 Geniev 77 777
+Zeppelin M 29 194 12.04.2014 0 90 34
+Pepperoni M 17 210 10.05.2014 1 Krapivnaya 10 25
+Margarita F 22 212 17.04.2014 1 Dlinnaya 5 46
+Admiral M 25 256 13.04.2014 0 30 30
+Anna F 21 288 14.04.2014 0 53 210
+Igor M 17 225 12.04.2014 1 Svobodi 3 26
+Denis M 22 238 13.04.2014 0 15 72
+Alexander M 25 262 15.04.2014 1 Krapivnaya 10 22
+Aurora F 22 239 12.04.2014 0 80 32
+Artur M 19 222 10.05.2014 1 Korotkaya 1 28
+Aphrodita F 28 250 17.04.2014 1 Dlinnaya 2 23
+Stepan M 22 290 13.04.2014 0 10 99
+Danil M 20 210 17.04.2014 1 Marksa 10 13
+Vladimir M 19 240 13.04.2014 0 3 26
+Pyotr M 22 240 12.04.2014 1 Marksa 15 72
+Alexander M 25 262 15.04.2014 1 Krapivnaya 12 20
+Inna F 22 239 12.04.2014 0 75 40
+Konstantin M 19 222 10.05.2014 1 Korotkaya 2 30
+Vladislav F 28 250 17.04.2014 1 Dlinnaya 6 25
+Grigory M 22 290 13.04.2014 0 1 9
+Daniil M 20 210 17.04.2014 1 Marksa 10 3

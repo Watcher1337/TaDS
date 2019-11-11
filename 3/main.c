@@ -17,7 +17,7 @@
 #include <string.h>
 #include <windows.h>
 #include <time.h>
-
+ 
 #include "prints.h"
 #include "fill.h"
 #include "alloc.h"
@@ -33,7 +33,8 @@ int main()
     int *matrix1, *matrix2;
 
     int fill_perc = 30; // filling %
-    int non_zero_num = 0;
+    int non_zero_row_1 = 0, non_zero_num_1 = 0;
+    int non_zero_row_2 = 0, non_zero_num_2 = 0;
 
     int choice = -1;
     
@@ -109,8 +110,20 @@ int main()
     
         if (error == ERROR_NONE)
         {
+            // Allocating memory and converting matrixes into sparse vector form
+            count_non_zero(matrix1, rows, columns, &non_zero_row_1, &non_zero_num_1);
+            alloc_sparse_matrix_vectors(s_matrix1, non_zero_num_1);
+            alloc_sparse_matrix_list(s_matrix1, non_zero_row_1);
             convert_matrix(matrix1, s_matrix1, rows, columns);
+
+            count_non_zero(matrix2, rows2, columns2, &non_zero_row_2, &non_zero_num_2);
+            alloc_sparse_matrix_vectors(s_matrix2, non_zero_num_2);
+            alloc_sparse_matrix_list(s_matrix2, non_zero_row_2);
             convert_matrix(matrix2, s_matrix2, rows2, columns2);
+
+            alloc_sparse_matrix_vectors(s_matrix3, non_zero_num_1 + non_zero_num_2);
+            s_matrix3->IA->Nk = -1;
+            s_matrix3->IA->i = -1;
         }
     }
     else
@@ -119,6 +132,9 @@ int main()
         error = ERROR_INPUT;
     }
     
+    free_sparse_matrix(s_matrix3);
+    free_sparse_matrix(s_matrix2);
+    free_sparse_matrix(s_matrix1);
     matrix_free(matrix2);
     matrix_free(matrix1);
     return error;

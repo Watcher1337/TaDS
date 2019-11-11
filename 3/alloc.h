@@ -5,8 +5,9 @@
 
 int matrix_alloc(int **vector, int size);
 void matrix_free(int *vector);
-void matrix_packed_alloc(int *A, int *JA);
-void matrix_packed_free(int *A, int *JA, LIST IA);
-void vector_realloc(int *vector, int target_size); //UNUS
+void vector_realloc(int *vector, int target_size); //UNUSED
+void alloc_sparse_matrix_vectors(SMATRIX sm, int size);
+void alloc_sparse_matrix_list(SMATRIX sm, int size);
+void free_sparse_matrix(SMATRIX sm);
 
-#endif
+#endif 

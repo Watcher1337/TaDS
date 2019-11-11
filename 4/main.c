@@ -1,8 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "func.h"
+#include "func_list.h"
 #include "func_arr.h"
+#include "compare.h"
 
 int main()
 {
@@ -10,11 +11,11 @@ int main()
 
     STACK data_list;
     data_list = create_stack(&error);
-    make_null(data_list);
+    data_list->next = NULL;
 
     STACK_ARR data_array;
-    data_array = create_stack_r(MAX_STACK_SIZE);
-    make_null_r(data_array);
+    data_array = create_stack_r(MAX_STACK_SIZE, &error);
+
 
     char buffer[BUFF_SIZE];
     
@@ -22,12 +23,21 @@ int main()
     int stack_created = 0;
     int stack_size_list = 0;
     int exp_info_size = 0;
-    STACK *list_addr = (STACK *)malloc(sizeof(STACK *) * MAX_STACK_SIZE);
+    //STACK *list_addr = (STACK *)malloc(sizeof(STACK *) * MAX_STACK_SIZE);
+    node_ptr *list_address = (node_ptr *)malloc(sizeof(node_ptr) * MAX_STACK_SIZE);
+    
+    if (list_address == NULL)
+    {
+        printf("Allocation error\n");
+        error = ERROR_ERROR;
+    }
+    
     char x;
 
     while (choice != 0 && error == ERROR_NONE)
     {
         print_menu();
+        fflush(stdin);
         if (scanf("%d", &choice) == 1)
             switch (choice)
             {
@@ -38,8 +48,8 @@ int main()
                     printf("Warning: You should input at least one bracket\n");
                 else if (exp_info_size + stack_size_list > MAX_STACK_SIZE)
                 {
-                    printf("Error: stack overflow\n");
-                    error = ERROR_ERROR;
+                    printf("Stack overflow\n");
+                    //error = ERROR_ERROR;
                 }
                 else if (error == ERROR_NONE)
                     check_expression(data_list, exp_info_size, &error);
@@ -56,7 +66,8 @@ int main()
                     if (scanf("%c", &x) == 1)
                     {
                         push(x, data_list, &error);
-                        list_addr[stack_size_list] = data_list->next;
+                        //list_addr[stack_size_list] = data_list->next;
+                        list_address[stack_size_list] = data_list->next;
                         stack_size_list++; // add address records
                     }
                     else
@@ -79,9 +90,7 @@ int main()
                     printf("Total list stack elements: %d\n", stack_size_list);
                     printf("\nAddresses:\n");
                     for (int i = 0; i < stack_size_list; i++)
-                    {
-                        printf("%zu\n", list_addr[i]);
-                    }
+                        printf("%zu\n", list_address[i]);
                 }
                 else
                     printf("List stack is empty\n");
@@ -117,7 +126,7 @@ int main()
                 if (!is_empty_r(data_array))
                 {
                     printf("Top element of array stack is %c \n", top_r(data_array));
-                    printf("Total elements in array stack: %d\n", data_array->stack_size);
+                    printf("Total elements in array stack: %d\n", ((data_array->curr_ptr - data_array->stack_array)) + 1);
                 }
                 else
                     printf("Array stack is empty\n");
@@ -125,7 +134,9 @@ int main()
                 break;
 
             case 9:
-                compare_stacks(data_list, data_array, &error);
+                compare(1000, &error);
+                if (error == ERROR_NONE)
+                    compare(10000, &error);
                 system("pause");
                 break;
                 
@@ -133,12 +144,19 @@ int main()
                 break;
             }
         else
+        {
             printf("Wrong input\n");
+            system("pause");
+        }
     }
 
-    free(list_addr);
+    free(list_address);
+    //printf("address free\n");
     empty_stack_r(data_array);
+    //printf("array empty\n");
     free_stack_r(data_array);
+    //printf("array free\n");
     empty_stack(data_list);
+    //printf("stack empty\n");
     return error; 
 }

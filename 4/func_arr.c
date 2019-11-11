@@ -2,25 +2,30 @@
 #include <stdlib.h>
 
 #include "func_arr.h"
-#include "func.h"
 
-STACK_ARR create_stack_r(int max_elements)
+STACK_ARR create_stack_r(int max_elements, int *error)
 {
     STACK_ARR S;
-    
+     
     if(max_elements < 1)
         printf("Stack size is too small\n");
     
-    S = (STACK_ARR) malloc(sizeof(struct stack_record));
+    S = (STACK_ARR)malloc(sizeof(struct stack_record));
     if(S == NULL)
+    {
+        *error = ERROR_ERROR;
         printf("Memory allocation error\n");
-
+    }
     S->stack_array = (char *)malloc(sizeof(char) * max_elements);
     
     if(S->stack_array == NULL)
+    {
+        *error = ERROR_ERROR;
         printf("Memory allocation error\n");
-    
-    S->top_of_stack = EMPTY_TOS;
+    }
+
+    S->stack_size = max_elements;
+    S->curr_ptr = S->stack_array - 1;
     S->stack_size = 0;
     
     return(S);
@@ -28,21 +33,17 @@ STACK_ARR create_stack_r(int max_elements)
 
 int is_empty_r(STACK_ARR S)
 {
-    return(S->top_of_stack == EMPTY_TOS);
-}
-
-void make_null_r(STACK_ARR S)
-{
-    S->top_of_stack = EMPTY_TOS;
+    return (S->curr_ptr == S->stack_array - 1);
 }
 
 void push_r(char x, STACK_ARR S)
 {
-    if(S->stack_size == MAX_STACK_SIZE)
+    if(S->curr_ptr > S->stack_array + S->stack_size - 1)
         printf("Full stack");
     else
     {
-        S->stack_array[++S->top_of_stack] = x;
+        S->curr_ptr++;
+        *(S->curr_ptr) = x;
         S->stack_size++;
     }
 }
@@ -52,7 +53,7 @@ char top_r(STACK_ARR S)
     if(is_empty_r(S))
         printf("Empty stack\n");
     else
-        return S->stack_array[S->top_of_stack];
+        return *(S->curr_ptr);
 }
 
 void pop_r(STACK_ARR S)
@@ -60,12 +61,13 @@ void pop_r(STACK_ARR S)
     if(is_empty_r(S))
         printf("Empty stack\n");
     else
-        S->top_of_stack--;
+        S->curr_ptr--;
 }
 
 void free_stack_r(STACK_ARR stack)
 {
     free(stack->stack_array);
+    free(stack);
 }
 
 void empty_stack_r(STACK_ARR stack)

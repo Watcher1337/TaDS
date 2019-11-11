@@ -2,12 +2,12 @@
 #include <stdlib.h>
 #include <time.h>
 
-#include "func.h"
+#include "func_list.h"
 #include "func_arr.h"
 
 int is_empty(STACK S)
 {
-    return(S->next == NULL);
+    return (S->next == NULL);
 }
 
 STACK create_stack(int *error)
@@ -20,14 +20,6 @@ STACK create_stack(int *error)
         *error = ERROR_ERROR;
     }
     return S;
-}
-
-void make_null(STACK S)
-{
-    if(S != NULL)
-        S->next = NULL;
-    else
-        printf("Must use create_stack first\n");
 }
 
 void push(char x, STACK S, int *error)
@@ -90,11 +82,7 @@ int push_expression(char *buffer, STACK data, int *error)
         }
 
         if (stack_size == MAX_STACK_SIZE)
-        {
-            printf("Error: stack overflow\n");
-            *error = ERROR_ERROR; 
             break;
-        }
     }
 
     return stack_size;
@@ -106,7 +94,6 @@ void check_expression(STACK data, int stack_size, int *error)
     int to_exit = 0;
     while (stack_size > 0)
     {
-        
         char b = top(data);
         pop(data);
 
@@ -149,9 +136,9 @@ void check_expression(STACK data, int stack_size, int *error)
     }
 
     if (mismatch[0] != 0 || mismatch[1] != 0 || mismatch[2] != 0 || to_exit)
-        printf("expression bracket format is wrong\n\n");
+        printf("WRONG\n\n");
     else
-        printf("expression bracket format is correct\n\n");
+        printf("CORRECT\n\n");
 }
 
 void print_menu()
@@ -169,70 +156,6 @@ void print_menu()
     printf("-----------------------------------\n");
     printf("9 - compare array vs list effectiveness\n");
     printf("0 - exit\n");
-}
-
-void compare_stacks(STACK data_list, STACK_ARR data_array, int *error)
-{
-    empty_stack(data_list);
-    empty_stack_r(data_array);
-
-    clock_t time1;
-    clock_t time2;
-    double current = 0;
-
-    size_t size_list_empty = sizeof(data_list);
-    size_t size_list_full = 0;
-    char x = 'F';
-    for (int i = 0; i < 10000; i++)
-    {
-        time1 = clock();
-        push(x, data_list, error);
-        time2 = clock();
-        size_list_full += sizeof(data_list);
-        current += time2 - time1;
-    }
-    double push_timer_list = (double)current / CLOCKS_PER_SEC;
-
-    current = 0;
-    time1 = clock();
-    for (int i = 0; i < 10000; i++)
-    {
-        pop(data_list);
-    }
-    time2 = clock();
-    current += time2 - time1;  
-    double pop_timer_list = (double)current / CLOCKS_PER_SEC;
-
-    current = 0;
-    size_t size_array_empty = sizeof(data_array);
-    time1 = clock();
-    for (int i = 0; i < 1000; i++)
-    {
-        push_r(x, data_array);
-    }
-    time2 = clock();
-    current += time2 - time1;
-    double push_timer_array = (double)current / CLOCKS_PER_SEC;
-    size_t size_array_full = data_array->stack_size * sizeof(char);
-
-    current = 0;
-    time1 = clock();
-    for (int i = 0; i < 1000; i++)
-    {
-        pop_r(data_array);
-    }
-    time2 = clock();
-    current += time2 - time1;  
-    double pop_timer_array = (double)current / CLOCKS_PER_SEC;
-
-    printf("size of empty list stack: %d\n", size_list_empty);
-    printf("size of empty array stack: %d\n", size_array_empty);
-    printf("size of full list stack: %d\n", size_list_full);
-    printf("size of full array stack: %d\n", size_array_full);
-    printf("\ntime to fill 1000 list-stack elements: %lf\n", push_timer_list);
-    printf("time to fill 1000 array-stack elements: %lf\n", push_timer_array);
-    printf("\ntime to empty 1000 list-stack elements: %lf\n", pop_timer_list);
-    printf("time to empty 1000 array-stack elements: %lf\n", pop_timer_array);
 }
 
 void empty_stack(STACK data)

@@ -1,5 +1,5 @@
 Ivan M 19 190 13.04.2014 1 Starokachalovskaya 30 43
-Svetlana F 24 236 13.04.2014 0 32 43
+Svetlana F 24 236 17.04.2014 0 32 43
 Stepan M 23 264 15.04.2014 1 Svobodi 90 23
 Grigory M 26 185 12.04.2014 0 90 34
 Evgeny M 19 200 10.05.2014 1 Krapivnaya 10 25
@@ -13,7 +13,6 @@ Appolo M 24 239 12.04.2014 0 80 32
 Plutus M 17 205 10.05.2014 1 Korotkaya 1 28
 Mercury M 28 216 17.04.2014 1 Dlinnaya 4 42
 Nikolay M 19 280 13.04.2014 0 10 99
-Danil M 26 210 17.04.2014 1 Marksa 10 13
 Semyon M 26 192 14.04.2014 1 Krapivnaya 3 47
 Marta F 24 276 12.04.2014 0 37 42
 Kodzima M 49 270 01.01.2019 1 Geniev 77 777

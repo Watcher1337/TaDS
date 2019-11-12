@@ -88,7 +88,7 @@ void analyse_sorts_keys(struct Stud *students, struct Keys Keys, int amount);
 void printMenu();
 void swap_students(struct Stud *A, struct Stud *B);
 void swap_int(int *a, int *b);
-int findMaxStud(struct Stud *students, int size, int comp);
+//int findMaxStud(struct Stud *students, int size, int comp);
 
 
 int main()
@@ -365,6 +365,7 @@ void getStudentsByDate(struct Stud *students, int size)
 void deleteEntry(FILE *file, struct Stud *students, int *size)
 {
     int choice;
+    int don_t = 0;
 
     printf("choose number of entry from table to be deleted\n");
 
@@ -374,7 +375,7 @@ void deleteEntry(FILE *file, struct Stud *students, int *size)
         printStruct(students[i]);
     }
     
-    if (scanf("%d", &choice) == 1)
+    if (scanf("%d", &choice) == 1 && choice >= 0 && choice < (*size) - 1)
     {
         for (int i = choice; i < *size - 1; i++)
             swap_students(&students[i], &students[i + 1]);
@@ -383,10 +384,10 @@ void deleteEntry(FILE *file, struct Stud *students, int *size)
     else
     {
         printf("Wrong Input\n");
-        system("pause");
+        don_t = 1;
     }
 
-    for (int i = 0; i < *size; i++)
+    for (int i = 0; i < *size && don_t == 0; i++)
     {
         if (students[i].flag == 1)
         {
@@ -637,6 +638,7 @@ void swap_int(int *a, int *b)
     *b = temp;
 }
 
+/*
 int findMaxStud(struct Stud *students, int size, int comp)
 {
     int max = 0;
@@ -647,6 +649,7 @@ int findMaxStud(struct Stud *students, int size, int comp)
 
     return max;
 }
+*/
 
 void printStruct(struct Stud students)
 {

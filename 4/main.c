@@ -63,7 +63,7 @@ int main()
                 {
                     fseek(stdin, SEEK_END, 0);
                     printf("Enter a single character: ");
-                    if (scanf("%c", &x) == 1)
+                    if (scanf("%c", &x) == 1 && x != '\n' && x != ' ')
                     {
                         push(x, data_list, &error);
                         //list_addr[stack_size_list] = data_list->next;
@@ -88,6 +88,8 @@ int main()
                 {
                     printf("Top element of list stack is %c \n", top(data_list));
                     printf("Total list stack elements: %d\n", stack_size_list);
+                    printf("Elements in the stack, top to bottom: \n");
+                    display_stack(data_list, stack_size_list);
                     printf("\nAddresses:\n");
                     for (int i = 0; i < stack_size_list; i++)
                         printf("%zu\n", list_address[i]);
@@ -98,15 +100,16 @@ int main()
                 break;
 
             case 6:
-                if (data_array->stack_size == MAX_STACK_SIZE)
+                if ((data_array->stack_size) == MAX_STACK_SIZE)
+                {
                     printf("Array stack is full\n");
+                }
                 else
                 {
                     fseek(stdin, SEEK_END, 0);
                     printf("Enter a single character: ");
-                    if (scanf("%c", &x) == 1)
+                    if (scanf("%c", &x) == 1 && x != '\n' && x != ' ')
                     {
-                        data_array->stack_size++;
                         push_r(x, data_array);
                     }
                     else
@@ -127,6 +130,8 @@ int main()
                 {
                     printf("Top element of array stack is %c \n", top_r(data_array));
                     printf("Total elements in array stack: %d\n", ((data_array->curr_ptr - data_array->stack_array)) + 1);
+                    printf("stack elements, top to bottom: \n");
+                    display_stack_r(data_array, data_array->stack_size);
                 }
                 else
                     printf("Array stack is empty\n");

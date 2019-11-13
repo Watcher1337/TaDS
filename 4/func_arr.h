@@ -23,5 +23,6 @@ void pop_r(STACK_ARR S);
 char top_r(STACK_ARR S);
 void empty_stack_r(STACK_ARR stack);
 void free_stack_r(STACK_ARR stack);
+void display_stack_r(STACK_ARR data, int stack_size);
 
 #endif

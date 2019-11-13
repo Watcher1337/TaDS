@@ -5,7 +5,7 @@
 #define ERROR_ERROR 1
 
 #define BUFF_SIZE 256
-#define MAX_STACK_SIZE 10
+#define MAX_STACK_SIZE 6
  
 #include "func_arr.h"
 
@@ -26,6 +26,7 @@ void pop(STACK S);
 char top(STACK S);
 void check_expression(STACK data, int stack_size, int *error);
 int push_expression(char *buffer, STACK data, int *error);
+void display_stack(STACK data, int stack_size);
 void print_menu();
 
 #endif

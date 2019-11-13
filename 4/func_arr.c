@@ -75,3 +75,28 @@ void empty_stack_r(STACK_ARR stack)
     while(!is_empty_r(stack))
         pop_r(stack);
 }
+
+void display_stack_r(STACK_ARR data, int stack_size)
+{
+    int *save = (int *)malloc(sizeof(int) * stack_size);
+
+    if (save)
+    {
+        for (int i = 0; i < stack_size; i++)
+        {
+            save[i] = top_r(data);
+            printf("%c\n", save[i]);
+            pop_r(data);
+        }
+
+        for (int i = stack_size - 1; i >= 0; i--)
+        {
+            push_r(save[i], data);
+            data->stack_size--;
+        }
+    }
+    else
+    {
+        printf("Memory allocation error\n");
+    }
+}

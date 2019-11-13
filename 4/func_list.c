@@ -163,3 +163,8 @@ void empty_stack(STACK data)
     while (!is_empty(data))
         pop(data);
 }
+
+void display_stack(STACK data, int stack_size)
+{
+    
+}

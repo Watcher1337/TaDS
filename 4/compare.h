@@ -3,4 +3,4 @@
 
 void compare(int N, int *error);
 
-#endif
+#endif 

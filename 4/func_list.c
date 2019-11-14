@@ -5,9 +5,17 @@
 #include "func_list.h"
 #include "func_arr.h"
 
+static void **free_area;
+static int n;
+
 int is_empty(STACK S)
 {
     return (S->next == NULL);
+} 
+
+void init_free_area()
+{
+    free_area = calloc(FREE_AREA, sizeof(void *));
 }
 
 STACK create_stack(int *error)
@@ -39,7 +47,7 @@ void push(char x, STACK S, int *error)
     }
 }
 
-void pop(STACK S)
+void pop(STACK S, int flag)
 {
     node_ptr first_cell;
     if(is_empty(S))
@@ -48,6 +56,10 @@ void pop(STACK S)
     {
         first_cell = S->next;
         S->next = S->next->next;
+
+        if (flag)
+            free_area[n++] = (void *)first_cell;
+
         free(first_cell);
     }
 }
@@ -80,9 +92,6 @@ int push_expression(char *buffer, STACK data, int *error)
             push(sym, data, error);
             stack_size++;
         }
-
-        if (stack_size == MAX_STACK_SIZE)
-            break;
     }
 
     return stack_size;
@@ -95,7 +104,7 @@ void check_expression(STACK data, int stack_size, int *error)
     while (stack_size > 0)
     {
         char b = top(data);
-        pop(data);
+        pop(data, 0);
 
         if (b != -1 && to_exit == 0)
         {
@@ -161,10 +170,22 @@ void print_menu()
 void empty_stack(STACK data)
 {
     while (!is_empty(data))
-        pop(data);
+        pop(data, 1);
 }
 
-void display_stack(STACK data, int stack_size)
+void display_stack(STACK data)
 {
-    
+    node_ptr curr = data->next;
+
+    printf("stack elements:\n");
+    while (curr != NULL)
+    {
+        printf("%c (%p)\n", curr->expression, curr);
+        curr = curr->next;
+    }
+
+    printf("free zone adresses:\n");
+    for (int i = 0; i < n; i++)
+        printf("%p ", free_area[i]);
+    puts("");
 }

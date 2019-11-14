@@ -13,17 +13,18 @@ int main()
     data_list = create_stack(&error);
     data_list->next = NULL;
 
-    STACK_ARR data_array;
+    STACK_ARR data_array; 
     data_array = create_stack_r(MAX_STACK_SIZE, &error);
 
+    init_free_area();
 
     char buffer[BUFF_SIZE];
     
     int choice = 1;
     int stack_created = 0;
-    int stack_size_list = 0;
+
     int exp_info_size = 0;
-    //STACK *list_addr = (STACK *)malloc(sizeof(STACK *) * MAX_STACK_SIZE);
+
     node_ptr *list_address = (node_ptr *)malloc(sizeof(node_ptr) * MAX_STACK_SIZE);
     
     if (list_address == NULL)
@@ -46,40 +47,23 @@ int main()
 
                 if (exp_info_size == 0)
                     printf("Warning: You should input at least one bracket\n");
-                else if (exp_info_size + stack_size_list > MAX_STACK_SIZE)
-                {
-                    printf("Stack overflow\n");
-                    //error = ERROR_ERROR;
-                }
                 else if (error == ERROR_NONE)
                     check_expression(data_list, exp_info_size, &error);
                 system("pause");
                 break;
 
             case 3:
-                if (stack_size_list == MAX_STACK_SIZE)
-                    printf("Stack is full\n");
+                fseek(stdin, SEEK_END, 0);
+                printf("Enter a single character: ");
+                if (scanf("%c", &x) == 1 && x != '\n' && x != ' ')
+                    push(x, data_list, &error);
                 else
-                {
-                    fseek(stdin, SEEK_END, 0);
-                    printf("Enter a single character: ");
-                    if (scanf("%c", &x) == 1 && x != '\n' && x != ' ')
-                    {
-                        push(x, data_list, &error);
-                        //list_addr[stack_size_list] = data_list->next;
-                        list_address[stack_size_list] = data_list->next;
-                        stack_size_list++; // add address records
-                    }
-                    else
-                        printf("Error: Wrong input\n");
-                }
+                    printf("Error: Wrong input\n");
                 system("pause");
                 break; 
 
             case 4: 
-                if (stack_size_list > 0)
-                    stack_size_list--;
-                pop(data_list);
+                pop(data_list, 1);
                 system("pause");
                 break;
 
@@ -87,12 +71,7 @@ int main()
                 if (!is_empty(data_list))
                 {
                     printf("Top element of list stack is %c \n", top(data_list));
-                    printf("Total list stack elements: %d\n", stack_size_list);
-                    printf("Elements in the stack, top to bottom: \n");
-                    display_stack(data_list, stack_size_list);
-                    printf("\nAddresses:\n");
-                    for (int i = 0; i < stack_size_list; i++)
-                        printf("%zu\n", list_address[i]);
+                    display_stack(data_list);
                 }
                 else
                     printf("List stack is empty\n");
@@ -130,7 +109,7 @@ int main()
                 {
                     printf("Top element of array stack is %c \n", top_r(data_array));
                     printf("Total elements in array stack: %d\n", ((data_array->curr_ptr - data_array->stack_array)) + 1);
-                    printf("stack elements, top to bottom: \n");
+                    printf("stack elements: \n");
                     display_stack_r(data_array, data_array->stack_size);
                 }
                 else

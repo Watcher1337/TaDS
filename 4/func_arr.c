@@ -13,7 +13,7 @@ STACK_ARR create_stack_r(int max_elements, int *error)
     S = (STACK_ARR)malloc(sizeof(struct stack_record));
     if(S == NULL)
     {
-        *error = ERROR_ERROR;
+        *error = ERROR_ERROR; 
         printf("Memory allocation error\n");
     }
     S->stack_array = (char *)malloc(sizeof(char) * max_elements);

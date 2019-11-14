@@ -55,7 +55,7 @@ void compare(int N, int *error)
 
     t1 = tick();
     for (int i = 0; i < N; i++)
-        pop(stack_list);
+        pop(stack_list, 0);
     t2 = tick();
     duration = (unsigned long long)(t2 - t1);
 

@@ -5,7 +5,7 @@
 #define ERROR_ERROR 1
 
 #define BUFF_SIZE 256
-#define EMPTY_TOS (-1)
+#define MAX_STACK_SIZE 6
 
 typedef struct stack_record *STACK_ARR;
 

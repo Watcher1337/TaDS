@@ -171,6 +171,7 @@ void empty_stack(STACK data)
 {
     while (!is_empty(data))
         pop(data, 1);
+    free(free_area);
 }
 
 void display_stack(STACK data)

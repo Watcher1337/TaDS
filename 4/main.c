@@ -135,12 +135,8 @@ int main()
     }
 
     free(list_address);
-    //printf("address free\n");
     empty_stack_r(data_array);
-    //printf("array empty\n");
     free_stack_r(data_array);
-    //printf("array free\n");
     empty_stack(data_list);
-    //printf("stack empty\n");
     return error; 
 }

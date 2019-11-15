@@ -9,7 +9,7 @@
 #define MAX_MATRIX_SIZE 100000
 
 typedef struct node *node_ptr;
-typedef node_ptr IA_LIST;
+typedef node_ptr JA_LIST;
 
 struct node
 {
@@ -22,11 +22,10 @@ struct node
 struct sparse_matrix
 {
     int* A;
-    int* JA;
-    IA_LIST IA;
+    int* IA;
+    JA_LIST JA;
 };
 
-typedef struct sparse_matrix *smatr;
-typedef smatr SMATRIX;
+typedef struct sparse_matrix SMATRIX;
 
 #endif

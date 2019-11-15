@@ -2,6 +2,7 @@
 #include <stdlib.h>
 
 #include "fill.h"
+#include "list.h"
 
 void auto_fill_matrix(int *matrix, int rows, int columns, int percent)
 { 
@@ -45,18 +46,27 @@ void manual_fill_matrix(int *matrix, int rows, int columns)
 int convert_matrix(int *matrix, SMATRIX sm, int rows, int columns)
 {
     int error = ERROR_NONE;
+    
+    int curr = 0;
+    int first = 0;
+
     for (int i = 0; i < rows; i++)
     {
-        int counter = 0;
+        first = 1;
         for (int k = 0; k < columns; k++)
-        {
             if (matrix[i * columns + k] != 0)
             {
-                sm->A = matrix[i * columns + k];
-                sm->JA = k;
-                counter++;
+                sm.A[curr] = matrix[i * columns + k];
+                sm.IA[curr] = k;
+
+                if (first)
+                {
+                    first = 0;
+                    push(curr, i, sm.JA);
+                    printf("list\n");
+                }
+                curr++;
             }
-        }
     }
 
     return error;

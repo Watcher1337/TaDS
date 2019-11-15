@@ -5,7 +5,7 @@
 #include "list.h"
 
 int matrix_alloc(int **vector, int size)
-{
+{ 
     int error = ERROR_NONE;
     *vector = (int *)calloc(size, sizeof(int));
 
@@ -18,7 +18,7 @@ int matrix_alloc(int **vector, int size)
     return error; 
 }
 
-void alloc_sparse_matrix_vectors(SMATRIX sm, int size)
+void alloc_sparse_matrix_vectors(SMATRIX * sm, int size)
 {
     int *temp = (int *)malloc(sizeof(int) * size);
     if (temp)
@@ -29,7 +29,8 @@ void alloc_sparse_matrix_vectors(SMATRIX sm, int size)
 
         if (temp)
         {
-            sm->JA = temp;
+            sm->IA = temp;
+            temp = NULL;
         }
         else
         {
@@ -49,32 +50,25 @@ void matrix_free(int *vector)
 
 void free_sparse_matrix(SMATRIX sm)
 {
-    free(sm->A); // freeing vector with non-zero nums
-    free(sm->JA); // freeing vector with columns of these nums
-    while (!is_empty(sm->IA))
-        pop(sm->IA);
+    free(sm.A); // freeing vector with non-zero nums
+    free(sm.IA); // freeing vector with rows of these nums
+    while (!is_empty(sm.JA))
+        pop(sm.JA);
 }
 
-void alloc_sparse_matrix_list(SMATRIX sm, int non_zero_rows)
+void alloc_sparse_matrix_list(SMATRIX * sm, int non_zero_rows)
 {
-    node_ptr tmp;
     if (non_zero_rows > 0)
     {
-        tmp = (node_ptr)malloc(sizeof(struct node));
-        if (tmp)
-        {
-            for (int i = 0; i < non_zero_rows && tmp, i++)
-            {
-                tmp->next = (node_ptr)malloc(sizeof(struct node));
-                tmp = tmp->next;
-            }
-            tmp->next = NULL;
-        }
-        else
+        sm->JA = (JA_LIST)malloc(sizeof(struct node));
+        sm->JA->next = NULL;
+        if (!sm->JA)
         {
             printf("Allocation error\n");
         }
     }
+    else
+    {
+        printf("Empty matrix\n");
+    }
 }
-
-void vector_realloc(int *vector, int target_size); //UNUS

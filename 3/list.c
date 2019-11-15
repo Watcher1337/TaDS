@@ -4,45 +4,37 @@
 #include "definitions.h"
 #include "list.h"
 
-void pop(IA_LIST IA)
-{
-    if (is_empty(IA))
+void pop(JA_LIST JA)
+{ 
+    if (is_empty(JA))
         printf("List is empty\n");
     else
     {
-        node_ptr first = IA->next;
-        IA->next = IA->next->next;
-        free(IA);
+        node_ptr first = JA->next;
+        JA->next = JA->next->next;
+        free(JA);
     }
 }
 
-int is_empty(IA_LIST IA)
+int is_empty(JA_LIST JA)
 {
-    return(IA->next == NULL);
+    return(JA->next == NULL);
 }
 
-void repack_matrix(int *matrix, int rows, int columns, SMATRIX sm)
+int push(int Nk, int i, JA_LIST JA)
 {
-    int A_curr = 0;
-    int An_curr = 0;
-    int first_in_column = 1;
+    node_ptr tmp;
+    tmp = (node_ptr)malloc(sizeof(struct node));
 
-    for (int i = 0; i < columns; i++)
+    if (tmp)
     {
-        for (int k = 0; k < rows; k++, first_in_column = 1)
-        {
-            sm->A[A_curr] = matrix[i * columns + k];
-            sm->JA[A_curr] = k;
-
-            if (first_in_column)
-            {
-                first_in_column = 0;
-                sm->IA->Nk = A_curr;
-                sm->IA->i = i;
-                sm->IA = sm->IA->next;
-            }
-            A_curr++;
-        }
+        tmp->Nk = Nk;
+        tmp->i = i;
+        tmp->next = JA->next;
+        JA->next = tmp;
+    }
+    else
+    {
+        printf("Node alloaction error\n");
     }
 }
-

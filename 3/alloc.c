@@ -19,7 +19,7 @@ int matrix_alloc(int **vector, int size)
 }
 
 void alloc_sparse_matrix_vectors(SMATRIX * sm, int size)
-{
+{ 
     int *temp = (int *)malloc(sizeof(int) * size);
     if (temp)
     {
@@ -63,8 +63,21 @@ void alloc_sparse_matrix_list(SMATRIX * sm, int non_zero_rows)
         sm->JA = (JA_LIST)malloc(sizeof(struct node));
         sm->JA->next = NULL;
         if (!sm->JA)
-        {
             printf("Allocation error\n");
+        else
+        {
+            node_ptr tmp = sm->JA;
+            for(int i = 0; i < non_zero_rows && tmp; i++)
+            {
+                tmp = (node_ptr)malloc(sizeof(struct node));
+                if(!tmp)
+                    printf("node allocation error\n");
+                
+                if (i + 1 == non_zero_rows)
+                    tmp->next = NULL;
+                else
+                    tmp = tmp->next;
+            }
         }
     }
     else

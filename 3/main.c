@@ -32,7 +32,7 @@ int main()
 
     int *matrix1, *matrix2;
 
-    int fill_perc = 30; // filling %
+    int fill_perc = 50; // filling %
     int non_zero_row_1 = 0, non_zero_num_1 = 0;
     int non_zero_row_2 = 0, non_zero_num_2 = 0;
 
@@ -82,7 +82,7 @@ int main()
                     if (scanf("%c", &ch) == 1)
                     {
                         if (ch == 'y' || ch == 'Y')
-                        {
+                        { 
                             printf("Matrix will be filled manually\n");
                             manual_fill_matrix(matrix2, rows2, columns2);
                         }
@@ -115,19 +115,19 @@ int main()
             printf("sparse allocated\n");
             alloc_sparse_matrix_list(&s_matrix1, non_zero_row_1);
             printf("list allocated\n");
-            convert_matrix(matrix1, s_matrix1, rows, columns);
+            convert_matrix(matrix1, &s_matrix1, rows, columns);
             printf("matrix converted\n");
             if (rows < 10 && columns < 10)
                 print_matrix(matrix1, rows, columns);
-            print_sparse_matrix(s_matrix1, non_zero_num_1, non_zero_row_1);
+            print_sparse_matrix(&s_matrix1, non_zero_num_1, non_zero_row_1);
 
             count_non_zero(matrix2, rows2, columns2, &non_zero_row_2, &non_zero_num_2);
             alloc_sparse_matrix_vectors(&s_matrix2, non_zero_num_2);
             alloc_sparse_matrix_list(&s_matrix2, non_zero_row_2);
-            convert_matrix(matrix2, s_matrix2, rows2, columns2);
+            convert_matrix(matrix2, &s_matrix2, rows2, columns2);
             if (rows2 < 10 && columns2 < 10)
                 print_matrix(matrix2, rows2, columns2);
-            print_sparse_matrix(s_matrix2, non_zero_num_2, non_zero_row_2);
+            print_sparse_matrix(&s_matrix2, non_zero_num_2, non_zero_row_2);
 
             alloc_sparse_matrix_vectors(&s_matrix3, non_zero_num_1 + non_zero_num_2);
             s_matrix3.JA->Nk = -1;

@@ -41,9 +41,9 @@ void manual_fill_matrix(int *matrix, int rows, int columns)
         fflush(stdin);
     }
     while (scanf("%d %d %d", &i, &j, &value) == 3);
-}
+} 
 
-int convert_matrix(int *matrix, SMATRIX sm, int rows, int columns)
+int convert_matrix(int *matrix, SMATRIX *sm, int rows, int columns)
 {
     int error = ERROR_NONE;
     
@@ -56,14 +56,17 @@ int convert_matrix(int *matrix, SMATRIX sm, int rows, int columns)
         for (int k = 0; k < columns; k++)
             if (matrix[i * columns + k] != 0)
             {
-                sm.A[curr] = matrix[i * columns + k];
-                sm.IA[curr] = k;
+                sm->A[curr] = matrix[i * columns + k];
+                sm->IA[curr] = k;
 
                 if (first)
                 {
+                    printf("1 ");
                     first = 0;
-                    push(curr, i, sm.JA);
-                    printf("list\n");
+                    sm->JA->Nk = curr;
+                    sm->JA->i = i;
+                    sm->JA = sm->JA->next;
+                    printf("2\n");
                 }
                 curr++;
             }

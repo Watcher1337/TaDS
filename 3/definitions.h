@@ -17,7 +17,7 @@ struct node
     int Nk;
 
     node_ptr next;
-};
+}; 
 
 struct sparse_matrix
 {

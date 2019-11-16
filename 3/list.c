@@ -18,23 +18,6 @@ void pop(JA_LIST JA)
 
 int is_empty(JA_LIST JA)
 {
-    return(JA->next == NULL);
+    return(JA->next == NULL); 
 }
 
-int push(int Nk, int i, JA_LIST JA)
-{
-    node_ptr tmp;
-    tmp = (node_ptr)malloc(sizeof(struct node));
-
-    if (tmp)
-    {
-        tmp->Nk = Nk;
-        tmp->i = i;
-        tmp->next = JA->next;
-        JA->next = tmp;
-    }
-    else
-    {
-        printf("Node alloaction error\n");
-    }
-}

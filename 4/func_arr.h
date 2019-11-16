@@ -5,7 +5,7 @@
 #define ERROR_ERROR 1
 
 #define BUFF_SIZE 256
-#define MAX_STACK_SIZE 6
+#define MAX_STACK_SIZE 32
 
 typedef struct stack_record *STACK_ARR;
 
@@ -24,5 +24,7 @@ char top_r(STACK_ARR S);
 void empty_stack_r(STACK_ARR stack);
 void free_stack_r(STACK_ARR stack);
 void display_stack_r(STACK_ARR data, int stack_size);
+int push_expression_r(char *buffer, STACK_ARR data, int *error);
+void check_expression_r(STACK_ARR data, int stack_size, int *error);
 
 #endif

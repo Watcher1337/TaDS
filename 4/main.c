@@ -42,7 +42,7 @@ int main()
         if (scanf("%d", &choice) == 1)
             switch (choice)
             {
-            case 2:
+            case 1:
                 exp_info_size = push_expression(buffer, data_list, &error);
 
                 if (exp_info_size == 0)
@@ -52,7 +52,7 @@ int main()
                 system("pause");
                 break;
 
-            case 3:
+            case 2:
                 fseek(stdin, SEEK_END, 0);
                 printf("Enter a single character: ");
                 if (scanf("%c", &x) == 1 && x != '\n' && x != ' ')
@@ -62,12 +62,12 @@ int main()
                 system("pause");
                 break; 
 
-            case 4: 
+            case 3: 
                 pop(data_list, 1);
                 system("pause");
                 break;
 
-            case 5:
+            case 4:
                 if (!is_empty(data_list))
                 {
                     printf("Top element of list stack is %c \n", top(data_list));
@@ -75,6 +75,16 @@ int main()
                 }
                 else
                     printf("List stack is empty\n");
+                system("pause");
+                break;
+
+            case 5:
+                exp_info_size = push_expression_r(buffer, data_array, &error);
+
+                if (exp_info_size == 0)
+                    printf("Warning: you should input at least one bracket\n");
+                else if (error == ERROR_NONE)
+                    check_expression_r(data_array, exp_info_size, &error);
                 system("pause");
                 break;
 

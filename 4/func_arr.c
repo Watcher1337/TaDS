@@ -100,3 +100,78 @@ void display_stack_r(STACK_ARR data, int stack_size)
         printf("Memory allocation error\n");
     }
 }
+
+int push_expression_r(char *buffer, STACK_ARR data, int *error)
+{
+    fseek(stdin, SEEK_END, 0);
+    printf("Enter expression containing () {} or [] brackets: ");
+    gets(buffer);
+
+    int stack_size = 0;
+ 
+    for (int k = 0; buffer[k] != '\0' && *error == ERROR_NONE; k++)
+    {
+        int sym = buffer[k];
+
+        if ((sym == '(') || (sym == '{') || (sym == '[') || (sym == ')') || (sym == '}') || (sym == ']'))
+        {
+            push_r(sym, data);
+            stack_size++;
+        }
+    }
+
+    return stack_size;
+}
+
+void check_expression_r(STACK_ARR data, int stack_size, int *error)
+{
+    int mismatch[3] = {0, 0, 0};
+    int to_exit = 0;
+    while (stack_size > 0)
+    {
+        char b = top_r(data);
+        pop_r(data);
+
+        if (b != -1 && to_exit == 0)
+        {
+            switch (b)
+            {
+            case '{':
+                if (mismatch[0] == 0)
+                    to_exit = 1;
+                mismatch[0]++;
+                break;
+            case '(':
+                if (mismatch[1] == 0)
+                    to_exit = 1;
+                mismatch[1]++;
+                break;
+            case '[':
+                if (mismatch[2] == 0)
+                    to_exit = 1;
+                mismatch[2]++;
+                break;
+
+            case '}':
+                mismatch[0]--;
+                break;
+            case ')':
+                mismatch[1]--;
+                break;
+            case ']':
+                mismatch[2]--;
+                break;
+
+            default:
+                break;
+            }            
+        }
+
+        stack_size--;
+    }
+
+    if (mismatch[0] != 0 || mismatch[1] != 0 || mismatch[2] != 0 || to_exit)
+        printf("WRONG\n\n");
+    else
+        printf("CORRECT\n\n");
+}

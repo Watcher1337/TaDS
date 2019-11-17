@@ -4,7 +4,7 @@
 #include "alloc.h"
 #include "list.h"
 
-int matrix_alloc(int **vector, int size)
+int vector_alloc(int **vector, int size)
 { 
     int error = ERROR_NONE;
     *vector = (int *)calloc(size, sizeof(int));

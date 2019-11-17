@@ -6,5 +6,6 @@
 int is_empty(JA_LIST JA); // checks if JA in given smatrix is empty
 void pop(JA_LIST JA); // removes top element from smatrix's linked list JA
 void display_list(node_ptr start);
+int get_element(node_ptr start, int position);
 
 #endif 

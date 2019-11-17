@@ -23,7 +23,7 @@ void print_sparse_matrix(SMATRIX *sm, int non_zero_num, int non_zero_row)
     for (int i = 0; i < non_zero_num; i++)
         printf("%d ", sm->IA[i]);
  
-    printf("\n\nNk: ");
+    printf("\nNk: ");
     JA_LIST start = sm->JA;
     while (start != NULL)
     {
@@ -32,4 +32,19 @@ void print_sparse_matrix(SMATRIX *sm, int non_zero_num, int non_zero_row)
     }
 
     printf("\n\n");
+}
+
+void print_row_vector(int *vector, int size)
+{
+    for (int i = 0; i < size; i++)
+        printf("%d ", vector[i]);
+}
+
+void print_menu()
+{
+    printf("choose one of the options:\n");
+    printf("1 - row-vector * matrix\n");
+    printf("2 - matrix * matrix\n");
+    printf("3 - compare calculation time\n");
+    printf("0 - exit\n");
 }

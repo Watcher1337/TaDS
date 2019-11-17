@@ -38,16 +38,3 @@ int get_element(node_ptr start, int position)
         start = start->next;
     return start->Nk; 
 }
-
-
-int Multiplicate(SMATRIX sm, int row, double *x, double *b)
-{
-    for (int i = 0; i < row; i++)
-    {
-        b[i] = 0.0;
-        for (int j=get_element(sm.JA, i); j<get_element(sm.JA, i + 1); j++)
-            b[i] += sm.A[j] * x[sm.IA[j]];
-    }
-
-    return 0;
-}

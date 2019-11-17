@@ -154,11 +154,12 @@ void print_menu()
 {
     system("cls");
     printf("\nChoose one of the options below: \n");
-    printf("2 - Analyse expression\n");
-    printf("3 - Add element to stack (list)\n");
-    printf("4 - Pop element from stack (list)\n");
-    printf("5 - Display stack status (list)\n");
+    printf("1 - Analyse expression (list)\n");
+    printf("2 - Add element to stack (list)\n");
+    printf("3 - Pop element from stack (list)\n");
+    printf("4 - Display stack status (list)\n");
     printf("----------------------------------\n");
+    printf("5 - Analyse expression (array)\n");
     printf("6 - Add element to stack (array)\n");
     printf("7 - Pop element from stack (array)\n");
     printf("8 - Display stack status (array)\n");

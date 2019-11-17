@@ -48,28 +48,34 @@ int convert_matrix(int *matrix, SMATRIX *sm, int rows, int columns)
     int error = ERROR_NONE;
     
     int curr = 0;
-    int first = 0;
+    int in_row = 0;
+    int prev = 0;
 
+    sm->JA->Nk = 0;
+    node_ptr tmp = sm->JA->next;
     for (int i = 0; i < rows; i++)
     {
-        first = 1;
+        in_row = 0;
         for (int k = 0; k < columns; k++)
             if (matrix[i * columns + k] != 0)
             {
                 sm->A[curr] = matrix[i * columns + k];
                 sm->IA[curr] = k;
-
-                if (first)
-                {
-                    printf("1 ");
-                    first = 0;
-                    sm->JA->Nk = curr;
-                    sm->JA->i = i;
-                    sm->JA = sm->JA->next;
-                    printf("2\n");
-                }
+                in_row++;
                 curr++;
             }
+        
+        if (in_row == 0)
+        {
+            tmp->Nk = prev;
+            tmp = tmp->next;
+        }
+        else
+        {
+            tmp->Nk = in_row + prev;
+            tmp = tmp->next;
+            prev += in_row;
+        }
     }
 
     return error;

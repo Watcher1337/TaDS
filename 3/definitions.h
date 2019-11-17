@@ -13,9 +13,7 @@ typedef node_ptr JA_LIST;
 
 struct node
 {
-    int i;
     int Nk;
-
     node_ptr next;
 }; 
 

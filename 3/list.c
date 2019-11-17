@@ -24,10 +24,30 @@ int is_empty(JA_LIST JA)
 
 void display_list(node_ptr start)
 {
-    while (start)
+    while (start != NULL)
     {
-        printf("1)%d ", start->Nk);
+        printf("%d ", start->Nk);
         start = start->next;
     }
-    printf("\n");
+}
+
+int get_element(node_ptr start, int position)
+{
+    int count = 0;
+    while (count < position)
+        start = start->next;
+    return start->Nk; 
+}
+
+
+int Multiplicate(SMATRIX sm, int row, double *x, double *b)
+{
+    for (int i = 0; i < row; i++)
+    {
+        b[i] = 0.0;
+        for (int j=get_element(sm.JA, i); j<get_element(sm.JA, i + 1); j++)
+            b[i] += sm.A[j] * x[sm.IA[j]];
+    }
+
+    return 0;
 }

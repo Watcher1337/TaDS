@@ -56,9 +56,9 @@ void free_sparse_matrix(SMATRIX sm)
         pop(sm.JA);
 }
 
-void alloc_sparse_matrix_list(SMATRIX * sm, int non_zero_rows)
+void alloc_sparse_matrix_list(SMATRIX *sm, int size)
 {
-    if (non_zero_rows > 0)
+    if (size > 0)
     {
         sm->JA = (JA_LIST)malloc(sizeof(struct node));
         sm->JA->next = NULL;
@@ -66,28 +66,22 @@ void alloc_sparse_matrix_list(SMATRIX * sm, int non_zero_rows)
             printf("Allocation error\n");
         else
         {
-            node_ptr tmp;
+            node_ptr tmp = (node_ptr)malloc(sizeof(struct node));
             sm->JA->next = tmp;
-            printf("non-z rows: %d\n", non_zero_rows);
-            for(int i = 0; i < non_zero_rows; i++)
+
+            for(int i = 0; i < size - 1; i++)
             {
-                tmp = (node_ptr)malloc(sizeof(struct node));
-                
+                tmp->next = (node_ptr)malloc(sizeof(struct node));
+                tmp = tmp->next;   
+
                 if(!tmp)
                 {
                     printf("node allocation error\n");
                     break;
                 }
-
-                tmp = tmp->next;
             }
-            
-            tmp = NULL;
-            
-            if (is_empty(sm->JA))
-                printf("The Heck its disgusting\n");
-            else
-                display_list(sm->JA);
+
+            tmp->next = NULL;
         }
     }
     else

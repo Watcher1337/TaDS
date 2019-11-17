@@ -24,19 +24,12 @@ void print_sparse_matrix(SMATRIX *sm, int non_zero_num, int non_zero_row)
         printf("%d ", sm->IA[i]);
  
     printf("\n\nNk: ");
-    JA_LIST start = sm->JA->next;
+    JA_LIST start = sm->JA;
     while (start != NULL)
     {
         printf("%d ", start->Nk);
         start = start->next;
     }
 
-    printf("\ni: ");
-    start = sm->JA->next;
-    while (start != NULL)
-    {
-        printf("%d ", start->i);
-        start = start->next;
-    }
     printf("\n\n");
 }

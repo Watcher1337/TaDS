@@ -113,25 +113,28 @@ int main()
             printf("count done\n");
             alloc_sparse_matrix_vectors(&s_matrix1, non_zero_num_1);
             printf("sparse allocated\n");
-            alloc_sparse_matrix_list(&s_matrix1, non_zero_row_1);
+            alloc_sparse_matrix_list(&s_matrix1, rows);
             printf("list allocated\n");
             convert_matrix(matrix1, &s_matrix1, rows, columns);
             printf("matrix converted\n");
+
             if (rows < 10 && columns < 10)
                 print_matrix(matrix1, rows, columns);
+
             print_sparse_matrix(&s_matrix1, non_zero_num_1, non_zero_row_1);
 
             count_non_zero(matrix2, rows2, columns2, &non_zero_row_2, &non_zero_num_2);
             alloc_sparse_matrix_vectors(&s_matrix2, non_zero_num_2);
-            alloc_sparse_matrix_list(&s_matrix2, non_zero_row_2);
+            alloc_sparse_matrix_list(&s_matrix2, rows);
             convert_matrix(matrix2, &s_matrix2, rows2, columns2);
+
             if (rows2 < 10 && columns2 < 10)
                 print_matrix(matrix2, rows2, columns2);
+
             print_sparse_matrix(&s_matrix2, non_zero_num_2, non_zero_row_2);
 
             alloc_sparse_matrix_vectors(&s_matrix3, non_zero_num_1 + non_zero_num_2);
             s_matrix3.JA->Nk = -1;
-            s_matrix3.JA->i = -1;
         }
     }
     else
@@ -145,5 +148,6 @@ int main()
     free_sparse_matrix(s_matrix1);
     matrix_free(matrix2);
     matrix_free(matrix1);
+    printf("OK\n");
     return error;
 }

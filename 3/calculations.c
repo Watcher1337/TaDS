@@ -32,15 +32,3 @@ void classic_multiplication(int* matrix, int* vector , int* result, int rows, in
             result[i] += matrix[k * columns + i] * vector[k];
         }
 }
-
-void smart_multiplication(SMATRIX *new_matrix, SMATRIX *vector, SMATRIX *matrix, int rows, int columns)
-{
-    for (int k = 0; k < rows; k++)
-    {
-        for (int i = matrix->IA[k]; i < matrix->ia[k+1]; i++)
-        {  
-            if (matrix->a[i] != 0)
-                new_matrix[k] += matrix->a[i] * get_element(vector, matrix->ja[i], matrix->ja[i]);
-        }
-    }
-}

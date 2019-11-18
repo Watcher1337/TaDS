@@ -4,11 +4,13 @@
 #include "calculations.h"
 #include "list.h"
 
+//row vector and sparse matrix multiplication
 //rows from nzr
-void sparse_multiplication(SMATRIX matr, int *vector, int *res_vector, int rows)
+void sparse_multiplication(SMATRIX matr, SMATRIX vector, int *res_vector, int rows)
 {
     int sum;
     int j1, j2;
+
     for (int i = 0; i < rows; i++)
     {
         sum = 0;
@@ -16,49 +18,29 @@ void sparse_multiplication(SMATRIX matr, int *vector, int *res_vector, int rows)
         j2 = get_element(matr.JA, i + 1);
 
         for (int j = j1; j < j2; j++)
-            sum += matr.A[j] + vector[matr.IA[j]];
+            sum += matr.A[j] + vector.A[matr.IA[j]];
+
         res_vector[i] = sum;
     }
 }
 
-/*
-int we()
+void classic_multiplication(int* matrix, int* vector , int* result, int rows, int columns)
 {
-    if (error == ERROR_NONE)
-    {
-        printf("input size of matrix two: ");
-        fflush(stdin);
-        if (scanf("%d%d", &rows2, &columns2) == 2 && rows2 > 0 && columns2 > 0 && rows2 * columns2 <= MAX_MATRIX_SIZE)
+    for (int i = 0; i < columns; i++)
+        for (int k = 0; k < rows; k++)
         {
-            if ((error = vector_alloc(&matrix2, rows2 * columns2)) == ERROR_NONE)
-            {
-                printf("Do you want to fill matrix manually? y/N\n");
-                fflush(stdin);
-                if (scanf("%c", &ch) == 1)
-                {
-                    if (ch == 'y' || ch == 'Y')
-                    { 
-                        printf("Matrix will be filled manually\n");
-                        manual_fill_matrix(matrix2, rows2, columns2);
-                    }
-                    else
-                    {
-                        printf("Matrix will be filled automatically\n");
-                        auto_fill_matrix(matrix2, rows2, columns2, fill_perc);
-                    }
-                }
-                else
-                {
-                    printf("Wrong Input\n");
-                    error = ERROR_INPUT;
-                }
-            }
+            result[i] += matrix[k * columns + i] * vector[k];
         }
-        else
-        {
-            printf("Wrong input\n");
-            error = ERROR_INPUT;
+}
+
+void smart_multiplication(SMATRIX *new_matrix, SMATRIX *vector, SMATRIX *matrix, int rows, int columns)
+{
+    for (int k = 0; k < rows; k++)
+    {
+        for (int i = matrix->IA[k]; i < matrix->ia[k+1]; i++)
+        {  
+            if (matrix->a[i] != 0)
+                new_matrix[k] += matrix->a[i] * get_element(vector, matrix->ja[i], matrix->ja[i]);
         }
     }
 }
-*/

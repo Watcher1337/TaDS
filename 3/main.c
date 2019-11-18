@@ -21,6 +21,7 @@
 #include "prints.h"
 #include "fill.h"
 #include "alloc.h"
+#include "calculations.h"
 #include "definitions.h"
 
 int main()
@@ -45,7 +46,7 @@ int main()
     if (scanf("%d%d", &rows, &columns) == 2 && rows > 0 && columns > 0 && rows * columns <= MAX_MATRIX_SIZE)
     {
         char ch;
-        if ((error = vector_alloc(&matrix1, rows * columns)) == ERROR_NONE)
+        if ((error = matrix_alloc(&matrix1, rows * columns)) == ERROR_NONE)
         {
             printf("Do you want to fill matrix manually? y/N\n");
             fflush(stdin);
@@ -79,57 +80,129 @@ int main()
 
             int choice = -1;
 
+            int* vector; 
+            int* res_vector;
+
             while (choice != 0)
             {
                 system("cls");
                 printf("matrix: \n");
+
                 if (rows < 10 && columns < 10)
                     print_matrix(matrix1, rows, columns);
+                if (rows < 50 && columns < 50)
+                    print_sparse_matrix(&s_matrix1, non_zero_num_1, non_zero_row_1);
 
-                print_sparse_matrix(&s_matrix1, non_zero_num_1, non_zero_row_1);
                 print_menu();
-
+                fflush(stdin);
                 if (scanf("%d", &choice) == 1)
                 {
                     switch(choice)
                     {
                         case 1:
-                            //CREATE/INPUT VECTOR
-                            //TURN INTO SPARSE FORM
-                            //CALCULATIONS
-                            //RESULT
+                            if (matrix_alloc(&vector, rows) == ERROR_NONE)
+                            {
+                                SMATRIX s_vector, s_res_vector;
+                                matrix_alloc(&res_vector, rows);
+                                printf("Do you want to fill vector manually? y/N\n");
+                                fflush(stdin);
+                                if (scanf("%c", &ch) == 1)
+                                {
+                                    if (ch == 'y' || ch == 'Y')
+                                        manual_fill_vector(vector, rows);
+                                    else
+                                    {
+                                        int fill_perc2 = 100; 
+                                        auto_fill_vector(vector, rows, fill_perc2);
+                                    }
+
+                                    printf("\nvector:\n");
+                                    print_vector(vector, rows);
+
+                                    count_non_zero(vector, 1, rows, &non_zero_row_2, &non_zero_num_2);
+                                    alloc_sparse_matrix_vectors(&s_matrix2, non_zero_num_2);
+                                    alloc_sparse_matrix_list(&s_matrix2, 1);
+                                    convert_matrix(res_vector, &s_matrix2, 1, rows);
+
+                                    sparse_multiplication(s_matrix1, vector, res_vector, rows);
+
+                                    printf("\nresult:\n");
+                                    print_vector(res_vector, rows);
+
+
+                                    printf("\nsparse result:");
+                                    print_sparse_matrix(&s_matrix2, non_zero_num_2, 1);
+                                }
+                                else
+                                {
+                                    printf("Wrong Input\n");
+                                    error = ERROR_INPUT;
+                                }
+                            }
+
+                            free(vector);
+                            free(res_vector);
+                            free_sparse_matrix(&s_matrix2);
+                            system("pause");
+                            break;
+
                         case 2:
-                            //CREATE/INPUT SECOND MATRIX
-                            //TURN INTO SPARSE FORM
-                            //CLASSIC MATRIX MULTIPLICATION
-                            //RESULT
+                            if (matrix_alloc(&vector, rows) == ERROR_NONE)
+                            {
+                                matrix_alloc(&res_vector, rows);
+                                printf("Do you want to fill vector manually? y/N\n");
+                                fflush(stdin);
+                                if (scanf("%c", &ch) == 1)
+                                {
+                                    if (ch == 'y' || ch == 'Y')
+                                        manual_fill_vector(vector, rows);
+                                    else
+                                    {
+                                        int fill_perc2 = 100; 
+                                        auto_fill_vector(vector, rows, fill_perc2);
+                                    }
+
+                                    printf("\nvector:\n");
+                                    print_vector(vector, rows);
+
+                                    classic_multiplication(matrix1, vector, res_vector, rows, columns);
+                                    
+                                    printf("\nresult:\n");
+                                    print_vector(res_vector, rows);
+                                }
+                                else
+                                {
+                                    printf("Wrong Input\n");
+                                    error = ERROR_INPUT;
+                                }
+                            }
+                            
+                            free(vector);
+                            free(res_vector);
+                            system("pause");
+                            break;
                         case 3:
                             //USE BOTH FUNCTIONS ABOVE TO COUNT TIME
                             //CALCULATE EFFICIENCY
+                            //RESULT
+                            system("pause");
+                            break;
                         default:
                             if (choice != 0)
+                            {
                                 printf("WARNING: select one of the options\n");
+                                system("pause");
+                            }
+                            
+                            break;
                     }
                 }
                 else
+                {
                     printf("wrong input\n");
+                    fflush(stdin);
+                }
             }
-
-
-            /*
-            count_non_zero(matrix2, rows2, columns2, &non_zero_row_2, &non_zero_num_2);
-            alloc_sparse_matrix_vectors(&s_matrix2, non_zero_num_2);
-            alloc_sparse_matrix_list(&s_matrix2, rows);
-            convert_matrix(matrix2, &s_matrix2, rows2, columns2);
-
-            if (rows2 < 10 && columns2 < 10)
-                print_matrix(matrix2, rows2, columns2);
-
-            print_sparse_matrix(&s_matrix2, non_zero_num_2, non_zero_row_2);
-
-            alloc_sparse_matrix_vectors(&s_matrix3, non_zero_num_1 + non_zero_num_2);
-            s_matrix3.JA->Nk = -1;
-            */
         }
     }
     else
@@ -137,11 +210,8 @@ int main()
         printf("Wrong input\n");
         error = ERROR_INPUT;
     }
-    
-    free_sparse_matrix(s_matrix3);
-    free_sparse_matrix(s_matrix2);
-    free_sparse_matrix(s_matrix1);
-    matrix_free(matrix2);
+
+    free_sparse_matrix(&s_matrix1);
     matrix_free(matrix1);
     printf("OK\n");
     return error;

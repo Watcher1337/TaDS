@@ -8,9 +8,6 @@ void auto_fill_matrix(int *matrix, int rows, int columns, int percent)
 { 
     int chance;
 
-    if (!matrix)
-        printf("help..\n");
-
     for(int i = 0; i < rows; i++)
         for(int j = 0; j < columns; j++)
         {
@@ -22,6 +19,21 @@ void auto_fill_matrix(int *matrix, int rows, int columns, int percent)
                 matrix[i * columns + j] = rand() % 10;
             }
         }
+}
+
+void auto_fill_vector(int *vector, int size, int percent)
+{
+    int chance;
+
+    for (int i = 0; i < size; i++)
+    {
+        chance = rand() % 100;
+
+        if (chance > percent)
+            vector[i] = 0;
+        else
+            vector[i] = rand() % 10;
+    }
 }
 
 void manual_fill_matrix(int *matrix, int rows, int columns)
@@ -42,6 +54,25 @@ void manual_fill_matrix(int *matrix, int rows, int columns)
     }
     while (scanf("%d %d %d", &i, &j, &value) == 3);
 } 
+
+void manual_fill_vector(int *vector, int size)
+{
+    int i = 0, value = 0;
+    fflush(stdin);
+
+    do
+    {
+        if (i >= 0 && i < size)
+            vector[i] = value;
+        else
+            printf("wrong index\n");
+        
+        printf("Input (i value): ");
+        fflush(stdin);
+    } 
+    while (scanf("%d %d", &i, &value) == 2);
+    
+}
 
 int convert_matrix(int *matrix, SMATRIX *sm, int rows, int columns)
 {
@@ -85,6 +116,8 @@ int convert_matrix(int *matrix, SMATRIX *sm, int rows, int columns)
 //nzn - non zero numbers
 void count_non_zero(int *matrix, int rows, int columns, int *nzr, int *nzn)
 {
+    *nzn = 0;
+    *nzr = 0;
     int row_count_flag = 0;
     for (int i = 0; i < rows; i++, row_count_flag = 0)
         for (int k = 0; k < columns; k++)

@@ -6,7 +6,7 @@
 #define ERROR_MEMORY 2
 #define ERROR_OTHER 3
 
-#define MAX_MATRIX_SIZE 100000
+#define MAX_MATRIX_SIZE 1000000
 
 typedef struct node *node_ptr;
 typedef node_ptr JA_LIST;

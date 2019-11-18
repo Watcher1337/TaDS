@@ -4,18 +4,33 @@
 #include "alloc.h"
 #include "list.h"
 
-int vector_alloc(int **vector, int size)
+int matrix_alloc(int **matrix, int size)
 { 
     int error = ERROR_NONE;
-    *vector = (int *)calloc(size, sizeof(int));
+    *matrix = (int *)calloc(size, sizeof(int));
 
-    if (!(*vector))
+    if (!(*matrix))
     {
         printf("Memory allocation error\n");
         error = ERROR_MEMORY;
     }
 
     return error; 
+}
+
+int vector_alloc(int **vector, int size)
+{
+    int error = ERROR_NONE;
+
+    *vector = (int *)calloc(size, sizeof(int));
+
+    if (!(*vector))
+    {
+        printf("Vector allocation error!\n");
+        error = ERROR_MEMORY;
+    }
+
+    return error;
 }
 
 void alloc_sparse_matrix_vectors(SMATRIX * sm, int size)
@@ -48,12 +63,20 @@ void matrix_free(int *vector)
     free(vector);
 }
 
-void free_sparse_matrix(SMATRIX sm)
+void free_sparse_matrix(SMATRIX *sm)
 {
-    free(sm.A); // freeing vector with non-zero nums
-    free(sm.IA); // freeing vector with rows of these nums
-    while (!is_empty(sm.JA))
-        pop(sm.JA);
+    free(sm->A);
+    free(sm->IA);
+
+    node_ptr tmp;
+    JA_LIST start = sm->JA;
+    while (start != NULL)
+    {
+        //printf("%d ", start->Nk);
+        tmp = start;
+        start = start->next;
+        free(tmp);
+    }    
 }
 
 void alloc_sparse_matrix_list(SMATRIX *sm, int size)

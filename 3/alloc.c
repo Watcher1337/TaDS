@@ -4,36 +4,18 @@
 #include "alloc.h"
 #include "list.h"
 
-int matrix_alloc(int **matrix, int size)
+int alloc_vector(int **matrix, int size)
 { 
     int error = ERROR_NONE;
     *matrix = (int *)calloc(size, sizeof(int));
 
     if (!(*matrix))
-    {
         printf("Memory allocation error\n");
-        error = ERROR_MEMORY;
-    }
 
     return error; 
 }
 
-int vector_alloc(int **vector, int size)
-{
-    int error = ERROR_NONE;
-
-    *vector = (int *)calloc(size, sizeof(int));
-
-    if (!(*vector))
-    {
-        printf("Vector allocation error!\n");
-        error = ERROR_MEMORY;
-    }
-
-    return error;
-}
-
-void alloc_sparse_matrix_vectors(SMATRIX * sm, int size)
+void alloc_sparse_matrix_vectors(sparse_matrix * sm, int size)
 { 
     int *temp = (int *)malloc(sizeof(int) * size);
     if (temp)
@@ -41,21 +23,16 @@ void alloc_sparse_matrix_vectors(SMATRIX * sm, int size)
         sm->A = temp;
 
         temp = (int *)malloc(sizeof(int) * size);
-
         if (temp)
         {
             sm->IA = temp;
             temp = NULL;
         }
         else
-        {
             printf("Error: memory allocation\n");
-        }
     }
     else
-    {
         printf("Error: memory allocation\n");
-    }
 }
 
 void matrix_free(int *vector)
@@ -63,28 +40,28 @@ void matrix_free(int *vector)
     free(vector);
 }
 
-void free_sparse_matrix(SMATRIX *sm)
+void free_sparse_matrix(sparse_matrix *sm)
 {
     free(sm->A);
     free(sm->IA);
 
     node_ptr tmp;
-    JA_LIST start = sm->JA;
+    list start = sm->JA;
     while (start != NULL)
     {
-        //printf("%d ", start->Nk);
         tmp = start;
         start = start->next;
         free(tmp);
     }    
 }
 
-void alloc_sparse_matrix_list(SMATRIX *sm, int size)
+void alloc_sparse_matrix_list(sparse_matrix *sm, int size)
 {
     if (size > 0)
     {
-        sm->JA = (JA_LIST)malloc(sizeof(struct node));
+        sm->JA = (list)malloc(sizeof(struct node));
         sm->JA->next = NULL;
+
         if (!sm->JA)
             printf("Allocation error\n");
         else
@@ -103,7 +80,6 @@ void alloc_sparse_matrix_list(SMATRIX *sm, int size)
                     break;
                 }
             }
-
             tmp->next = NULL;
         }
     }

@@ -16,7 +16,7 @@ prints.o: prints.c prints.h definitions.h
 list.o: list.h list.c
 	gcc -std=c99 -c list.c
 
-calculations.o: calculations.h calculations.c definitions.h
+calculations.o: calculations.h calculations.c definitions.h alloc.h fill.h list.h
 	gcc -std=c99 -c calculations.c
 
 clean:

@@ -20,7 +20,7 @@ void print_vector(int *vector, int size)
     printf("\n");
 }
 
-void print_sparse_matrix(SMATRIX *sm, int non_zero_num, int non_zero_row)
+void print_sparse_matrix(sparse_matrix *sm, int non_zero_num)
 {
     printf("\nA: ");
     for (int i = 0; i < non_zero_num; i++)
@@ -31,7 +31,7 @@ void print_sparse_matrix(SMATRIX *sm, int non_zero_num, int non_zero_row)
         printf("%d ", sm->IA[i]);
  
     printf("\nJA: ");
-    JA_LIST start = sm->JA;
+    list start = sm->JA;
     while (start != NULL)
     {
         printf("%d ", start->Nk);

@@ -15,28 +15,17 @@ void auto_fill_matrix(int *matrix, int rows, int columns, int percent)
             if (chance > percent)
                 matrix[i * columns + j] = 0;
             else
-            {
                 matrix[i * columns + j] = rand() % 10;
-            }
         }
 }
 
 void auto_fill_vector(int *vector, int size, int percent)
 {
-    int chance;
-
     for (int i = 0; i < size; i++)
-    {
-        chance = rand() % 100;
-
-        if (chance > percent)
-            vector[i] = 0;
-        else
-            vector[i] = rand() % 10;
-    }
+        vector[i] = rand() % 10;
 }
 
-void manual_fill_matrix(int *matrix, int rows, int columns)
+void manual_fill_matrix(int *matrix,  int rows, int columns)
 {
     int i = 0, j = 0, value = 0;
     fflush(stdin);
@@ -55,26 +44,32 @@ void manual_fill_matrix(int *matrix, int rows, int columns)
     while (scanf("%d %d %d", &i, &j, &value) == 3);
 } 
 
-void manual_fill_vector(int *vector, int size)
+void manual_fill_vector(int *vector, sparse_vector *svector, int size)
 {
     int i = 0, value = 0;
+    int current = 0;
     fflush(stdin);
 
-    do
+    printf("Input (i value): ");
+    while (current < svector->size && scanf("%d %d", &i, &value) == 2)
     {
         if (i >= 0 && i < size)
+        {
             vector[i] = value;
+            svector->A[current] = value;
+            svector->IA[current] = i;
+            current++;
+        }
         else
             printf("wrong index\n");
         
         printf("Input (i value): ");
         fflush(stdin);
     } 
-    while (scanf("%d %d", &i, &value) == 2);
     
 }
 
-int convert_matrix(int *matrix, SMATRIX *sm, int rows, int columns)
+int convert_matrix(int *matrix, sparse_matrix *sm, int rows, int columns)
 {
     int error = ERROR_NONE;
     
@@ -112,24 +107,16 @@ int convert_matrix(int *matrix, SMATRIX *sm, int rows, int columns)
     return error;
 }
 
-//nzr - non zero rows
 //nzn - non zero numbers
-void count_non_zero(int *matrix, int rows, int columns, int *nzr, int *nzn)
+void count_non_zero(int *matrix, int rows, int columns, int *nzn)
 {
     *nzn = 0;
-    *nzr = 0;
-    int row_count_flag = 0;
-    for (int i = 0; i < rows; i++, row_count_flag = 0)
+    for (int i = 0; i < rows; i++)
         for (int k = 0; k < columns; k++)
         {
             if (matrix[i * columns + k] != 0)
             {
                 *nzn = *nzn + 1;
-                if (row_count_flag == 0)
-                {
-                    *nzr = *nzr + 1;
-                    row_count_flag = 1;
-                }
             }
         }
 }

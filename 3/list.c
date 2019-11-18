@@ -4,7 +4,7 @@
 #include "definitions.h"
 #include "list.h"
 
-int is_empty(JA_LIST JA)
+int is_empty(list JA)
 {
     return(JA->next == NULL); 
 }

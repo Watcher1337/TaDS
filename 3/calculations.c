@@ -2,11 +2,13 @@
 #include <stdlib.h>
 
 #include "calculations.h"
+#include "alloc.h"
+#include "fill.h"
 #include "list.h"
 
 //row vector and sparse matrix multiplication
 //rows from nzr
-void sparse_multiplication(SMATRIX matr, SMATRIX vector, int *res_vector, int rows)
+void sparse_multiplication(sparse_matrix matr, sparse_vector vector, int *res_vector, int rows)
 {
     int sum;
     int j1, j2;
@@ -31,4 +33,39 @@ void classic_multiplication(int* matrix, int* vector , int* result, int rows, in
         {
             result[i] += matrix[k * columns + i] * vector[k];
         }
+}
+
+void calculate_and_measure(int *vector, int *res_vector, int rows, int columns, int* matrix, sparse_matrix smatrix)
+{
+    sparse_vector s_vector, s_res_vector;
+    printf("Input amount of vector elements: ");
+    int size;
+    if (scanf("%d", &size) == 1)
+    {
+        s_vector.A = (int *)calloc(size, sizeof(int));
+        s_vector.IA = (int *)calloc(size, sizeof(int));
+        s_vector.size = size;
+
+        manual_fill_vector(vector, &s_vector, rows);
+
+        printf("vector: ");
+        for (int i = 0; i < rows; i++)
+            printf("%d ", vector[i]);
+
+        printf("\nsparse form:\n");
+        
+        printf("A: ");
+        for (int i = 0; i < s_vector.size; i++)
+            printf("%d ", s_vector.A[i]);
+    
+        printf("\nIA: ");
+        for (int i = 0; i < s_vector.size; i++)
+            printf("%d ", s_vector.IA[i]);
+        printf("\n");
+    }
+    else
+    printf("Wrong Input\n");
+
+    free(s_vector.A);
+    free(s_vector.IA);
 }

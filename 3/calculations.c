@@ -6,6 +6,7 @@
 #include "alloc.h"
 #include "fill.h"
 #include "list.h"
+#include "prints.h"
 
 unsigned long long tick(void)
 {
@@ -43,6 +44,34 @@ void classic_multiplication(int* matrix, int* vector , int* result, int rows, in
         }
 }
 
+void transpose_matrix(int *matrix, sparse_matrix *smatrix, int rows, int columns)
+{
+    int save;
+
+    printf("original: \n");
+    print_matrix(matrix, rows, columns);
+
+    for (int i = 0; i < rows; i++)
+    {
+        for (int k = 0; k < columns; k++)
+        {
+            swap(&matrix[i * columns + k], &matrix[k * columns + k]);
+            printf("swapping %d with %d\n", matrix[i * columns + k], matrix[k * columns + k]);
+        }
+    }
+    printf("transposed: \n");
+    print_matrix(matrix, rows, columns);
+
+    convert_matrix(matrix, smatrix, rows, columns);
+}
+
+void swap(int *a, int *b)
+{
+    int temp = *a;
+    *a = *b;
+    *b = temp;
+}
+
 void transpose(int *matrix, sparse_matrix *smatrix, int rows, int columns)
 {
     int count = 0;
@@ -69,7 +98,7 @@ void transpose(int *matrix, sparse_matrix *smatrix, int rows, int columns)
 void calculate_and_measure(int *vector, int *res_vector, int rows, int columns, int* matrix, sparse_matrix smatrix)
 {
     sparse_vector s_vector, s_res_vector;
-    printf("Input amount of vector elements: ");
+    printf("Input amount of vector elements to be input: ");
     int size;
     if (scanf("%d", &size) == 1)
     {
@@ -101,11 +130,15 @@ void calculate_and_measure(int *vector, int *res_vector, int rows, int columns, 
             printf("%d ", res_vector[i]);
         printf("\n");
 
-        printf("pre-transpose\n");
-        
+        printf("pre-transpose:\n");
+        print_matrix(matrix, rows, columns);
+        int non_z = 0;
+        count_non_zero(matrix, rows, columns, &non_z);
+
         transpose(matrix, &smatrix, rows, columns);
         
-        printf("post-transpose\n");
+        printf("\npost-transpose\n");
+        print_sparse_matrix(&smatrix,  s_vector.size);
         
         sparse_multiplication(smatrix, s_vector, res_vector, columns);
 
@@ -123,9 +156,22 @@ void calculate_and_measure(int *vector, int *res_vector, int rows, int columns, 
         
         if (non_z_num > 0)
         {
-            s_res_vector.A = (int *)calloc(size, sizeof(int));
-            s_res_vector.IA = (int *)calloc(size, sizeof(int));
-            s_res_vector.size = size;
+            s_res_vector.A = (int *)calloc(non_z_num, sizeof(int));
+            s_res_vector.IA = (int *)calloc(non_z_num, sizeof(int));
+            s_res_vector.size = non_z_num;
+
+            convert_vector(res_vector, &s_res_vector, columns);
+
+            printf("sparse multiplication result in sparse form: \n");
+            printf("A: ");
+            for (int i = 0; i < s_res_vector.size; i++)
+                printf("%d ", s_res_vector.A[i]);
+            printf("\n");
+
+            printf("IA: ");
+            for (int i = 0; i < s_res_vector.size; i++)
+                printf("%d ", s_res_vector.IA[i]);
+            printf("\n");
 
             free(s_res_vector.A);
             free(s_res_vector.IA);

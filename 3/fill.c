@@ -69,6 +69,19 @@ void manual_fill_vector(int *vector, sparse_vector *svector, int size)
     
 }
 
+void convert_vector(int *vector, sparse_vector *svector, int size)
+{
+    int curr = 0;
+    
+    for (int i = 0; i < size; i++)
+        if (vector[i] != 0)
+        {
+            svector->A[curr] = vector[i];
+            svector->IA[curr] = i;
+            curr++;
+        }
+}
+
 int convert_matrix(int *matrix, sparse_matrix *sm, int rows, int columns)
 {
     int error = ERROR_NONE;

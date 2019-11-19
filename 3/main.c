@@ -80,7 +80,7 @@ int main()
     {
         int choice = -1;
 
-        int *vector, *res_vector;
+        int *vector, *res_vector; 
         vector = (int *)calloc(rows, sizeof(int));
         res_vector = (int *)calloc(columns, sizeof(int));
 

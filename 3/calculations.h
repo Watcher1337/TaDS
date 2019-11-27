@@ -8,4 +8,4 @@ void classic_multiplication(int* matrix, int* vector , int* result, int rows, in
 void calculate_and_measure(int *vector, int *res_vector, int rows, int columns, int* matrix, sparse_matrix smatrix);
 void swap(int *a, int *b);
 
-#endif
+#endif 

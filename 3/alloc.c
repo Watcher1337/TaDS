@@ -21,7 +21,7 @@ void alloc_sparse_matrix_vectors(sparse_matrix * sm, int size)
     if (temp)
     {
         sm->A = temp;
-
+ 
         temp = (int *)malloc(sizeof(int) * size);
         if (temp)
         {

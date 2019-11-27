@@ -10,4 +10,4 @@ void alloc_sparse_matrix_vectors(sparse_matrix * sm, int size);
 void alloc_sparse_matrix_list(sparse_matrix * sm, int size);
 void free_sparse_matrix(sparse_matrix *sm);
  
-#endif 
+#endif  

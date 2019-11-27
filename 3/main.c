@@ -15,11 +15,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <windows.h>
+#include <windows.h> 
 #include <time.h>
 
 #include "prints.h"
-#include "fill.h"
+#include "fill.h" 
 #include "alloc.h"
 #include "calculations.h"
 #include "definitions.h"

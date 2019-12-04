@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <windows.h> 
 #include <time.h>
 
 #define ERROR_NONE 0
@@ -23,7 +22,6 @@ struct sparse_matrix
 struct list_node
 {
     int Nk;
-    int depth;
     node_ptr next;
 };
 
@@ -35,12 +33,12 @@ void fill_vector_manually(int *vectir, int size);
 void fill_matrix_auto(int **matrix, int rows, int columns, int percentage);
 void fill_vector_auto(int *vector, int size);
 void free_matrix(int ***matrix, int rows, int columns);
-int transpose_matrix(int ***matrix, int rows, int columns);
+void transpose_matrix(s_matrix sm, int nze, int **matrix, int rows, int columns);
 void free_vector(int **vector);
 
 //list functions
 int alloc_list(node_ptr *list);
-int add_element(node_ptr list, int Nk, int depth);
+int add_element(node_ptr list, int Nk);
 node_ptr get_element(node_ptr start, int position);
 void remove_element(node_ptr list);
 node_ptr get_last(node_ptr list);
@@ -49,13 +47,15 @@ void empty_list(node_ptr list);
 
 //additional functions
 void count_non_zero(int **matrix, int rows, int columns, int *nze);
-int calculate_multiplication_speed(int **matrix, int rows, int columns, int nze, s_matrix *sm);
+int calculate_multiplication(int **matrix, int rows, int columns, int nze, s_matrix *sm);
+int calculate_multiplication_speed(int rows, int columns);
 
 //sparse-matrix related functions
 int alloc_sparse(s_matrix *sm, int nze);
+void copy_sparse(s_matrix source, s_matrix destination, int nze);
 int convert_matrix(int **matrix, int rows, int columns, s_matrix *sm);
 void classic_multiplication(int **matrix, int rows, int columns, int *vector, int *res, int size, int res_size);
-void sparse_multiplication(s_matrix *sm, s_vector *sv, s_vector *res);
+void sparse_multiplication(s_matrix sm, int *vector, int *res, int nze, int rows);
 
 //output functions
 void print_error(int error);
@@ -68,7 +68,7 @@ int main()
 {
     srand(time(NULL));
     int error = ERROR_NONE;
-
+    
     s_matrix matrix_s;
     int **matrix;
     int rows, columns;
@@ -82,20 +82,18 @@ int main()
         if (!error)
         {
             printf("would you like to fill matrix manually? y/N\n");
-            fflush(stdin);
 
             char choice;
-            
-            if (scanf("%c", &choice) == 1)
-            {
-                if (choice == 'y' || choice == 'Y')
-                    fill_matrix_manually(matrix, rows, columns);
-                else
-                    fill_matrix_auto(matrix, rows, columns, percentage);
-            }
+
+            do choice = getchar();
+            while (choice == '\n' || choice == EOF);
+
+            if (choice == 'y' || choice == 'Y')
+                fill_matrix_manually(matrix, rows, columns);
+            else
+                fill_matrix_auto(matrix, rows, columns, percentage);
         }
 
-        //printf("matrix is set...\n");
         if (!error)
         {
             printf("current matrix: \n");
@@ -114,7 +112,23 @@ int main()
                 printf("\nsparse form:\n");
                 print_sparse_matrix(&matrix_s, non_zero_el);
                 printf("\n");
-                calculate_multiplication_speed(matrix, rows, columns, non_zero_el, &matrix_s);
+                calculate_multiplication(matrix, rows, columns, non_zero_el, &matrix_s);
+
+                int flag = 0;
+                char choice;
+
+                while (!flag)
+                {
+                    calculate_multiplication_speed(rows, columns);
+                    printf("do you want to continue testing? y/N\n");
+
+                    do choice = getchar();
+                    while (choice == '\n' || choice == EOF);
+                    
+                    if (choice != 'y' && choice != 'Y')
+                        flag = 1;
+                }
+
                 free_sparse(&matrix_s);
             }
         }
@@ -222,25 +236,6 @@ void fill_matrix_auto(int **matrix, int rows, int columns, int percentage)
         }
 }
 
-int transpose_matrix(int ***matrix, int rows, int columns)
-{
-    int error = ERROR_NONE;
-    int *temp_vect;
-
-    for (int i = 0; i < columns && error == ERROR_NONE; i++)
-    {
-        temp_vect = (int *)calloc(rows, sizeof(int));
-        for (int k = 0; k < rows; k++)
-            temp_vect[k] = (*matrix)[k][i];
-
-
-        free(temp_vect);
-    }
-
-
-    return error;
-}
-
 void fill_vector_auto(int *vector, int size)
 {
     for (int i = 0; i < size; i++)
@@ -263,7 +258,7 @@ int alloc_list(node_ptr *list)
     return error;
 }
 
-int add_element(node_ptr list, int Nk, int depth)
+int add_element(node_ptr list, int Nk)
 {
     int error = ERROR_NONE;
 
@@ -275,7 +270,6 @@ int add_element(node_ptr list, int Nk, int depth)
     if (temp)
     {
         temp->Nk = Nk;
-        temp->depth = depth;
 
         last->next = temp;
         last->next->next = NULL;
@@ -382,13 +376,15 @@ int convert_matrix(int **matrix, int rows, int columns, s_matrix *sm)
 
                 if (is_first)
                 {
-                    add_element((*sm)->IA, current, k);
+                    add_element((*sm)->IA, current);
                     is_first = 0;
                 }
                 current++;
             }
         }
     }
+
+    add_element((*sm)->IA, current);
 
     return error;
 }
@@ -414,18 +410,57 @@ void classic_multiplication(int **matrix, int rows, int columns, int *vector, in
             res[i] += matrix[k][i] * vector[k];
 }
 
-void sparse_multiplication(s_matrix *sm, s_vector *sv, s_vector *res)
+void copy_sparse(s_matrix source, s_matrix destination, int nze)
 {
-    printf("sparse\n");
+    for (int i = 0; i < nze; i++)
+    {
+        destination->A[i] = source->A[i];
+        destination->JA[i] = source->JA[i];
+    }
+
+    empty_list(destination->IA);
+    node_ptr head = source->IA->next;
+
+    while (head)
+    {
+        add_element(destination->IA, head->Nk);
+        head = head->next;
+    }
 }
 
-int calculate_multiplication_speed(int **matrix, int rows, int columns, int nze, s_matrix *sm)
+void transpose_matrix(s_matrix sm, int nze, int **matrix, int rows, int columns)
+{
+    int **tmp_matrix;
+    int tmp_rows = columns, tmp_columns = rows;
+    alloc_matrix(&tmp_matrix, tmp_rows, tmp_columns);
+
+    for (int i = 0; i < rows; i++)
+        for (int k = 0; k < columns; k++)
+            tmp_matrix[k][i] = matrix[i][k];
+
+    s_matrix tmp_sm;
+    alloc_sparse(&tmp_sm, nze);
+    convert_matrix(tmp_matrix, tmp_rows, tmp_columns, &tmp_sm);
+    copy_sparse(tmp_sm, sm, nze);
+
+    free_matrix(&tmp_matrix, tmp_rows, tmp_columns);
+    free_sparse(&tmp_sm);
+}
+
+void sparse_multiplication(s_matrix sm, int *vector, int *res, int nze, int rows)
+{
+    for (int i = 1; i <= rows; ++i) 
+        for (int j = get_element(sm->IA, i)->Nk; j < get_element(sm->IA, i + 1)->Nk; j++)
+            res[i - 1] += sm->A[j] * vector[sm->JA[j]];
+}
+
+int calculate_multiplication(int **matrix, int rows, int columns, int nze, s_matrix *sm)
 {
     int error = ERROR_NONE;
     s_vector sv, sres;
     int *vector, *res;
     int size = rows;
-    int size_res = columns;
+    int size_res = rows;
 
     error = alloc_vector(&vector, size);
 
@@ -433,43 +468,49 @@ int calculate_multiplication_speed(int **matrix, int rows, int columns, int nze,
     {
         printf("do you want to input vector manually? y/N\n");
         char ch;
-        fflush(stdin);
+        
+        do ch = getchar();
+        while (ch == '\n' || ch == EOF);
 
-        if (scanf("%c", &ch) == 1)
-        {
-            if (ch == 'y' || ch == 'Y')
-                fill_vector_manually(vector, size);
-            else
-                fill_vector_auto(vector, size);
-
-            printf("string-vector: ");
-            print_vector(vector, size);
-            printf("\n");
-        }
+        if (ch == 'y' || ch == 'Y')
+            fill_vector_manually(vector, size);
         else
-            error = ERROR_INPUT;
+            fill_vector_auto(vector, size);
+
+        printf("\nstring-vector: ");
+        print_vector(vector, size);
+        printf("\n");
     }
 
     error = alloc_vector(&res, size_res);
 
     if (error == ERROR_NONE)
     {
-        int vec_nze = 0;
+        int vec_nze = 0, res_nze = 0;
         count_non_zero(&vector, 1, size, &vec_nze);
         alloc_sparse(&sv, vec_nze);
         convert_matrix(&vector, 1, size, &sv);
-        printf("in sparse form: \n");
+        printf("\nin sparse form: \n");
         print_sparse_matrix(&sv, vec_nze);
 
-        printf("\nclassic mutiplication: ");
         classic_multiplication(matrix, rows, columns, vector, res, size, size_res);
-
-        print_vector(res, size_res);
+        printf("\nclassic multiplication: ");
+        print_vector(res, size);
         printf("\n");
-        
-        printf("sparse multiplication: ");
 
-        sparse_multiplication(sm, &sv, &sres);
+        for (int i = 0; i < rows; i++)
+            res[i] = 0;
+        
+        printf("\nsparse multiplication: \n");
+
+        transpose_matrix(*sm, nze, matrix, rows, columns);
+        
+        sparse_multiplication(*sm, vector, res, nze, rows);
+        count_non_zero(&res, 1, size, &res_nze);
+        alloc_sparse(&sres, res_nze);
+        convert_matrix(&res, 1, size, &sres);
+        print_sparse_matrix(&sres, res_nze);
+        printf("\n");
 
         free_vector(&res);
         free_vector(&vector);
@@ -477,6 +518,74 @@ int calculate_multiplication_speed(int **matrix, int rows, int columns, int nze,
 
     return error;
 }
+
+int calculate_multiplication_speed(int rows, int columns)
+{
+    printf("Enter fill %% of the matrix: ");
+    int perc;
+
+    int **matrix;
+    int *vector, *res;
+    s_matrix sm;
+    s_vector sv;
+
+    int nze = 0;
+    int nze_vec = 0;
+
+    if (scanf("%d", &perc) == 1)
+    {
+        clock_t time1;
+        clock_t time2;
+        double time;
+
+        alloc_matrix(&matrix, rows, columns);
+        fill_matrix_auto(matrix, rows, columns, perc);
+        count_non_zero(matrix, rows, columns, &nze);
+        alloc_sparse(&sm, nze);
+        convert_matrix(matrix, rows, columns, &sm);
+
+        alloc_vector(&vector, rows);
+        alloc_vector(&res, rows);
+
+        fill_vector_auto(vector, rows);
+
+        printf("classic multiplication time: ");
+        time1 = clock();
+        classic_multiplication(matrix, rows, columns, vector, res, rows, rows);
+        time2 = clock();
+        time = (double)(time2 - time1) / CLOCKS_PER_SEC;
+        printf("%lf\n", time);
+
+        long int mem = sizeof(int *) * rows + sizeof(int) * columns + sizeof(int) * rows + sizeof(int) * columns;
+        printf("classic multiplication used memory: %ld\n\n", mem);
+        printf("sparse multiplication time: ");
+        
+        for (int i = 0; i < rows; i++)
+            res[i] = 0;
+
+        time1 = clock();
+        sparse_multiplication(sm, vector, res, nze, rows);
+        time2 = clock();
+        time = (double)(time2 - time1) / CLOCKS_PER_SEC;
+        printf("%lf\n", time);
+        mem = sizeof(int) * nze * 2 + sizeof (sm);
+
+        for (node_ptr tmp = sm->IA; tmp != NULL; tmp = tmp->next)
+            mem += sizeof(tmp);
+
+        printf("sparse multiplication used memory: %ld\n", mem);
+
+        printf("\n\n");
+
+        free_vector(&res);
+        free_vector(&vector);
+        free_sparse(&sm);
+        free_matrix(&matrix, rows, columns);
+    }
+    else
+        printf("Wrong input\n");
+}
+
 
 //---------------------------------------------------------------------------
 

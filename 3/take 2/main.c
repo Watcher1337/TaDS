@@ -25,7 +25,6 @@ struct list_node
     node_ptr next;
 };
 
-//everything matrix-related (standart form)
 int alloc_matrix(int ***matrix, int rows, int columns);
 int alloc_vector(int **vector, int size);
 void fill_matrix_manually(int **matrix, int rows, int columns);
@@ -36,7 +35,6 @@ void free_matrix(int ***matrix, int rows, int columns);
 void transpose_matrix(s_matrix sm, int nze, int **matrix, int rows, int columns);
 void free_vector(int **vector);
 
-//list functions
 int alloc_list(node_ptr *list);
 int add_element(node_ptr list, int Nk);
 node_ptr get_element(node_ptr start, int position);
@@ -45,19 +43,17 @@ node_ptr get_last(node_ptr list);
 void free_sparse(s_matrix *sm);
 void empty_list(node_ptr list);
 
-//additional functions
 void count_non_zero(int **matrix, int rows, int columns, int *nze);
 int calculate_multiplication(int **matrix, int rows, int columns, int nze, s_matrix *sm);
 int calculate_multiplication_speed(int rows, int columns);
 
-//sparse-matrix related functions
 int alloc_sparse(s_matrix *sm, int nze);
 void copy_sparse(s_matrix source, s_matrix destination, int nze);
 int convert_matrix(int **matrix, int rows, int columns, s_matrix *sm);
 void classic_multiplication(int **matrix, int rows, int columns, int *vector, int *res, int size, int res_size);
 void sparse_multiplication(s_matrix sm, int *vector, int *res, int nze, int rows);
+void sparse_multiplication_speed(s_matrix sm, int *vector, int *res, int nze, int rows);
 
-//output functions
 void print_error(int error);
 void print_sparse_matrix(s_matrix *sm, int nze);
 void print_matrix(int **matrix, int rows, int columns);
@@ -75,18 +71,24 @@ int main()
     int percentage = 40;
 
     printf("Input matrix size: ");
-    if (scanf("%d%d", &rows, &columns) == 2 && rows > 0 && columns > 0)
-    {
+    if (scanf("%d", &columns) == 1 && columns > 0)
+    {  
+        rows = columns;
         error = alloc_matrix(&matrix, rows, columns);
 
         if (!error)
         {
-            printf("would you like to fill matrix manually? y/N\n");
-
             char choice;
+            if (rows < 20)
+            {
+                printf("would you like to fill matrix manually? y/N\n");
 
-            do choice = getchar();
-            while (choice == '\n' || choice == EOF);
+
+                do choice = getchar();
+                while (choice == '\n' || choice == EOF);
+            }
+            else
+                choice = 'n';
 
             if (choice == 'y' || choice == 'Y')
                 fill_matrix_manually(matrix, rows, columns);
@@ -96,8 +98,11 @@ int main()
 
         if (!error)
         {
-            printf("current matrix: \n");
-            print_matrix(matrix, rows, columns);
+            if (rows < 20 && columns < 20)
+            {
+                printf("current matrix: \n");
+                print_matrix(matrix, rows, columns);
+            }
 
             int non_zero_el;
             count_non_zero(matrix, rows, columns, &non_zero_el);
@@ -109,10 +114,13 @@ int main()
 
             if (!error)
             {
-                printf("\nsparse form:\n");
-                print_sparse_matrix(&matrix_s, non_zero_el);
-                printf("\n");
-                calculate_multiplication(matrix, rows, columns, non_zero_el, &matrix_s);
+                if (rows < 20 && columns < 20)
+                {
+                    printf("\nsparse form:\n");
+                    print_sparse_matrix(&matrix_s, non_zero_el);
+                    printf("\n");
+                    calculate_multiplication(matrix, rows, columns, non_zero_el, &matrix_s);
+                }
 
                 int flag = 0;
                 char choice;
@@ -120,11 +128,13 @@ int main()
                 while (!flag)
                 {
                     calculate_multiplication_speed(rows, columns);
+                    fflush(stdin);
+                    fseek(stdin, SEEK_END, 0);
                     printf("do you want to continue testing? y/N\n");
 
                     do choice = getchar();
-                    while (choice == '\n' || choice == EOF);
-                    
+                    while (choice == '\n' || choice == EOF || choice == ' ');
+
                     if (choice != 'y' && choice != 'Y')
                         flag = 1;
                 }
@@ -224,16 +234,29 @@ void fill_vector_manually(int *vector, int size)
 void fill_matrix_auto(int **matrix, int rows, int columns, int percentage)
 {
     int chance;
+    int filling = rows * columns * percentage / 100;
+    int counter = 0;
 
-    for (int i = 0; i < rows; i++)
-        for (int k = 0; k < columns; k++)
-        {
-            chance = rand() % 100;
-            if (chance >= percentage)
-                matrix[i][k] = 0;
-            else
-                matrix[i][k] = rand() % 10;
-        }
+    while (counter < filling)
+    {
+        for (int i = 0; i < rows; i++)
+            for (int k = 0; k < columns; k++)
+            {
+                chance = rand() % 100;
+                if (chance >= percentage)
+                    matrix[i][k] = 0;
+                else
+                {
+                    matrix[i][k] = rand() % 9 + 1;
+                    counter++;
+                }
+            }
+    }
+
+    printf("\n");
+    if (rows < 40 && columns < 40)
+        print_matrix(matrix, rows, columns);
+    printf("\n");
 }
 
 void fill_vector_auto(int *vector, int size)
@@ -454,6 +477,27 @@ void sparse_multiplication(s_matrix sm, int *vector, int *res, int nze, int rows
             res[i - 1] += sm->A[j] * vector[sm->JA[j]];
 }
 
+void sparse_multiplication_speed(s_matrix sm, int *vector, int *res, int nze, int rows)
+{
+    time_t timer1, timer2;
+    double time = 0;
+
+    for (int i = 1; i <= rows; ++i)
+    {
+
+        timer1 = clock();
+        int a = get_element(sm->IA, i)->Nk;
+        int b = get_element(sm->IA, i + 1)->Nk;
+        for (int j = a; j < b; j++)
+            res[i - 1] += sm->A[j] * vector[sm->JA[j]];
+        timer2 = clock();
+
+        time += (double)(timer2 - timer1) / CLOCKS_PER_SEC;
+    }
+
+    printf("--time: %lf\n", time);
+}
+
 int calculate_multiplication(int **matrix, int rows, int columns, int nze, s_matrix *sm)
 {
     int error = ERROR_NONE;
@@ -521,9 +565,6 @@ int calculate_multiplication(int **matrix, int rows, int columns, int nze, s_mat
 
 int calculate_multiplication_speed(int rows, int columns)
 {
-    printf("Enter fill %% of the matrix: ");
-    int perc;
-
     int **matrix;
     int *vector, *res;
     s_matrix sm;
@@ -532,58 +573,69 @@ int calculate_multiplication_speed(int rows, int columns)
     int nze = 0;
     int nze_vec = 0;
 
-    if (scanf("%d", &perc) == 1)
-    {
-        clock_t time1;
-        clock_t time2;
-        double time;
+    clock_t time1;
+    clock_t time2;
+    double time;
 
-        alloc_matrix(&matrix, rows, columns);
-        fill_matrix_auto(matrix, rows, columns, perc);
-        count_non_zero(matrix, rows, columns, &nze);
-        alloc_sparse(&sm, nze);
-        convert_matrix(matrix, rows, columns, &sm);
+    alloc_matrix(&matrix, rows, columns);
+    
+    char choice;
+    printf("Do you want to input matrix manually? y/N\n");
 
-        alloc_vector(&vector, rows);
-        alloc_vector(&res, rows);
+    do choice = getchar();
+    while (choice == '\n' || choice == EOF);
 
-        fill_vector_auto(vector, rows);
-
-        printf("classic multiplication time: ");
-        time1 = clock();
-        classic_multiplication(matrix, rows, columns, vector, res, rows, rows);
-        time2 = clock();
-        time = (double)(time2 - time1) / CLOCKS_PER_SEC;
-        printf("%lf\n", time);
-
-        long int mem = sizeof(int *) * rows + sizeof(int) * columns + sizeof(int) * rows + sizeof(int) * columns;
-        printf("classic multiplication used memory: %ld\n\n", mem);
-        printf("sparse multiplication time: ");
-        
-        for (int i = 0; i < rows; i++)
-            res[i] = 0;
-
-        time1 = clock();
-        sparse_multiplication(sm, vector, res, nze, rows);
-        time2 = clock();
-        time = (double)(time2 - time1) / CLOCKS_PER_SEC;
-        printf("%lf\n", time);
-        mem = sizeof(int) * nze * 2 + sizeof (sm);
-
-        for (node_ptr tmp = sm->IA; tmp != NULL; tmp = tmp->next)
-            mem += sizeof(tmp);
-
-        printf("sparse multiplication used memory: %ld\n", mem);
-
-        printf("\n\n");
-
-        free_vector(&res);
-        free_vector(&vector);
-        free_sparse(&sm);
-        free_matrix(&matrix, rows, columns);
-    }
+    if (choice == 'y' || choice == 'Y')
+        fill_matrix_manually(matrix, rows, columns);
     else
-        printf("Wrong input\n");
+    {
+        printf("Enter fill %% of the matrix: ");
+        int perc;
+        if (scanf("%d", &perc) == 1)
+            fill_matrix_auto(matrix, rows, columns, perc);
+        else
+            printf("wrong input\n");
+    }
+
+    count_non_zero(matrix, rows, columns, &nze);
+    alloc_sparse(&sm, nze);
+    convert_matrix(matrix, rows, columns, &sm);
+
+    alloc_vector(&vector, rows);
+    alloc_vector(&res, rows);
+
+    fill_vector_auto(vector, rows);
+
+    printf("classic multiplication: \n");
+    printf("--time: ");
+    time1 = clock();
+    classic_multiplication(matrix, rows, columns, vector, res, rows, rows);
+    time2 = clock();
+    time = (double)(time2 - time1) / CLOCKS_PER_SEC;
+    printf("%lf\n", time);
+
+
+    long int mem = sizeof(int *) * rows + sizeof(int) * (rows * columns);
+    printf("--memory: %ld\n\n", mem);
+
+    for (int i = 0; i < rows; i++)
+        res[i] = 0;
+
+    printf("sparse multiplication: \n");
+    sparse_multiplication_speed(sm, vector, res, nze, rows);
+    mem = sizeof(int) * nze * 2 + sizeof (sm);
+
+    for (node_ptr tmp = sm->IA; tmp != NULL; tmp = tmp->next)
+        mem += sizeof(tmp);
+
+    printf("--memory: %ld\n", mem);
+
+    printf("\n\n");
+
+    free_vector(&res);
+    free_vector(&vector);
+    free_sparse(&sm);
+    free_matrix(&matrix, rows, columns);
 }
 
 

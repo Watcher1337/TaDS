@@ -1,6 +1,6 @@
 CC=gcc
 CFLAGS=-Wall -c 
-SOURCES=main.c measures.c queue.c
+SOURCES=measures.c queue.c prints.c processor.c main.c includes.c
 OBJECTS=$(SOURCES:.c=.o)
 EXECUTABLE=app.out
 

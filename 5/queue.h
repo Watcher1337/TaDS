@@ -52,7 +52,4 @@ int is_emplty_arr(queue_arr *q_arr);
 void free_list(queue_list *q_list);
 void free_arr(queue_arr *q_arr);
 
-void print_list(queue_list *q_list);
-void print_arr(queue_arr *queue_arr);
-
 #endif

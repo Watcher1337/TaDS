@@ -123,21 +123,3 @@ void free_arr(queue_arr *q_arr)
 {
     free(q_arr->arr);
 }
-
-void print_list(queue_list *q_list)
-{
-    node *tmp = q_list->list->next;
-    while (tmp != NULL)
-    {
-        printf("list element: %c\n", tmp->data);
-        tmp = tmp->next;
-    }
-    printf("\n");
-}
-
-void print_arr(queue_arr *queue_arr)
-{
-    for (int i = 0; i < queue_arr->curr_size; i++)
-        printf("arr element: %c\n", queue_arr->arr[i]);
-    printf("\n");
-}

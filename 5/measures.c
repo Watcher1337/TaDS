@@ -1,8 +1,21 @@
 #include "includes.h"
 #include "measures.h"
 
-void compare_time(queue_arr *q_arr, queue_list *q_list);
+void compare_time()
+{
+    queue_arr q_arr_1; // Requests of type 1
+    queue_arr q_arr_2; // type 2
 
+    queue_list q_list_1;
+    queue_list q_list_2;
+
+    time_t start_timer;
+    time_t end_timer;
+}
+
+
+
+/*
 //For internal tests ONLY
 void test_list(queue_list *q_list)
 {
@@ -29,4 +42,4 @@ void test_arr(queue_arr *q_arr)
 
     for (int i = 0; i < 10; i++)
         printf("pop Arr: %c\n", pop_arr(q_arr));
-} 
+}*/

@@ -16,4 +16,6 @@
 #include <time.h>
 #include <math.h>
 
+void clear_input_buffer(void);
+
 #endif

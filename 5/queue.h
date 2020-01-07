@@ -52,4 +52,8 @@ int is_emplty_arr(queue_arr *q_arr);
 void free_list(queue_list *q_list);
 void free_arr(queue_arr *q_arr);
 
+int is_empty_list(queue_list *q_list);
+int is_empty_arr(queue_arr *q_arr);
+
+
 #endif

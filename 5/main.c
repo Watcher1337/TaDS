@@ -12,14 +12,6 @@ int main()
     request_params params;
     set_default_request_params(&params);
 
-    queue_arr *q_arr = (queue_arr *)malloc(sizeof(queue_arr));
-    queue_list *q_list = (queue_list *)malloc(sizeof(queue_list));
-
-    error = alloc_list(q_list);
-    
-    if (error == ERROR_NONE)
-        error = alloc_arr(q_arr, ARR_SIZE);
-    
     int option = -1;
 
     while (option != 0 && error == ERROR_NONE)
@@ -32,10 +24,10 @@ int main()
                 change_request_params(&params);
                 break;
             case 2:
-                simulate_processing_list(&params, q_list);
+                simulate_processing_list(&params);
                 break;
             case 3:
-                simulate_processing_array(&params, q_arr);
+                simulate_processing_array(&params);
                 break;
             case 4:
                 show_memory_reuse_state();
@@ -46,11 +38,6 @@ int main()
         
         clear_input_buffer();
     }
-
-    free_list(q_list);
-    free(q_list);
-    free_arr(q_arr);
-    free(q_arr);
 
     print_resulting_error_code(error);
 

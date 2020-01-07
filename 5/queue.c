@@ -50,6 +50,7 @@ int push_list(queue_list *q_list, char c)
 
         q_list->p_in->next = tmp;
         q_list->p_in = tmp;
+        q_list->curr_size++;
     }
 
     return error;
@@ -101,9 +102,10 @@ char pop_list(queue_list *q_list)
     {
         node *tmp = q_list->list->next;
         ret = q_list->list->next->data;
-
         q_list->list->next = q_list->list->next->next;
+        
         free(tmp);
+        q_list->curr_size--;
     }
     else
         printf("queue is empty\n");
@@ -122,4 +124,14 @@ void free_list(queue_list *q_list)
 void free_arr(queue_arr *q_arr)
 {
     free(q_arr->arr);
+}
+
+int is_empty_list(queue_list *q_list)
+{
+    return (q_list->list->next == NULL);
+}
+
+int is_empty_arr(queue_arr *q_arr)
+{
+    return (q_arr->curr_size == 0);
 }

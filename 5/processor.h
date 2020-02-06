@@ -27,7 +27,7 @@ void simulate_processing_array(request_params *params);
 void simulate_processing_list(request_params *params);
 void print_queue_list_status(queue_list *q_list, queue_list *q_list_2, int req_num, int avg_len_1, int avg_len_2);
 float gen_number(float min, float max);
-
-
+void pause();
+void clear();
 
 #endif

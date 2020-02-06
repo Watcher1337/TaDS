@@ -1,16 +1,5 @@
 #include "prints.h"
 
-void print_list(queue_list *q_list)
-{
-    node *tmp = q_list->list->next;
-    while (tmp != NULL)
-    {
-        printf("list element: %c\n", tmp->data);
-        tmp = tmp->next;
-    }
-    printf("\n");
-}
-
 void print_arr(queue_arr *queue_arr)
 {
     for (int i = 0; i < queue_arr->curr_size; i++)

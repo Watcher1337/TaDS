@@ -1,23 +1,6 @@
 #include "includes.h"
 #include "queue.h"
 
-int alloc_list(queue_list *q_list)
-{
-    int error = ERROR_NONE;
-    q_list->list = (node *)malloc(sizeof(node));
-
-    if (!q_list->list)
-        error = ERROR_MEMORY;
-    else
-    {
-        q_list->list->next = NULL;
-        q_list->curr_size = 0;
-        q_list->p_in = q_list->list;
-    }
-
-    return error;
-} 
-
 int alloc_arr(queue_arr *q_arr, int amount)
 {
     int error = ERROR_NONE;
@@ -38,23 +21,6 @@ int alloc_arr(queue_arr *q_arr, int amount)
     return error;
 }
 
-int push_list(queue_list *q_list, char c)
-{
-    int error = ERROR_NONE;    
-    node *tmp = (node *)malloc(sizeof(node));
-    
-    if (tmp)
-    {
-        tmp->data = c;
-        tmp->next = NULL;
-
-        q_list->p_in->next = tmp;
-        q_list->p_in = tmp;
-        q_list->curr_size++;
-    }
-
-    return error;
-}
 
 int push_arr(queue_arr *q_arr, char c)
 {
@@ -94,31 +60,75 @@ char pop_arr(queue_arr *q_arr)
     return ret;
 }
 
-char pop_list(queue_list *q_list)
-{
-    char ret;
+// -------------------------------------------------------------------------------------------
 
-    if (q_list->list->next != NULL)
-    {
-        node *tmp = q_list->list->next;
-        ret = q_list->list->next->data;
-        q_list->list->next = q_list->list->next->next;
-        
-        free(tmp);
-        q_list->curr_size--;
-    }
-    else
+node *create_node(char a) 
+{ 
+    node *temp = (node*)malloc(sizeof(node)); 
+    temp->data = a; 
+    temp->next = NULL; 
+    return temp; 
+} 
+  
+queue_list *alloc_list() 
+{ 
+    queue_list *q = (queue_list *)malloc(sizeof(queue_list)); 
+    q->front = q->rear = NULL; 
+    q->curr_size = 0;
+    q->in = 0;
+    q->out = 0;
+
+    return q;
+} 
+  
+void push_list(queue_list *q, char a) 
+{ 
+    node *temp = create_node(a); 
+  
+    if (q->rear == NULL) 
+    { 
+        q->curr_size++;
+        q->front = q->rear = temp; 
+        return; 
+    } 
+
+    q->curr_size++;
+    q->in++;
+
+    q->rear->next = temp; 
+    q->rear = temp; 
+} 
+  
+char pop_list(queue_list *q) 
+{ 
+    char ret = 'x';
+
+    if (q->front == NULL) 
         printf("queue is empty\n");
+    else
+    {
+        node *temp = q->front; 
+        ret = temp->data;
 
-    return ret;
-}
+        q->front = q->front->next; 
+    
+        if (q->front == NULL) 
+            q->rear = NULL; 
+
+        q->curr_size--;
+        q->out++;
+        free(temp);
+    }
+
+    return ret; 
+} 
 
 void free_list(queue_list *q_list)
 {
     while (q_list->curr_size > 0)
         pop_list(q_list); // freeing all elements
     
-    free(q_list->list); // freeing root
+    free(q_list); // freeing root
 }
 
 void free_arr(queue_arr *q_arr)
@@ -128,7 +138,7 @@ void free_arr(queue_arr *q_arr)
 
 int is_empty_list(queue_list *q_list)
 {
-    return (q_list->list->next == NULL);
+    return (q_list->rear == NULL);
 }
 
 int is_empty_arr(queue_arr *q_arr)

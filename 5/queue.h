@@ -19,17 +19,15 @@ struct queue_array
     int out; //Counts processed elements
     int in; //Counts entering elements
 };
-
-struct queue_list
-{
-    node *p_in;
-
-    node *list; //List head(root)
-    int max_num;
+  
+struct queue_list 
+{ 
+    int max_size;
     int curr_size;
-    int out;
     int in;
-};
+    int out;
+    struct node *front, *rear; 
+}; 
 
 struct node
 {
@@ -37,10 +35,11 @@ struct node
     node *next;
 };
 
-int push_list(queue_list *q_list, char c);
+void push_list(queue_list *q, char a);
 int push_arr(queue_arr *q_arr, char c);
 
-int alloc_list(queue_list *q_list);
+queue_list* alloc_list();
+node* create_node(char a);
 int alloc_arr(queue_arr *q_arr, int amount);
 
 char pop_arr(queue_arr *q_arr);

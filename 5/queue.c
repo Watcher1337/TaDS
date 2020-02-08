@@ -145,3 +145,20 @@ int is_empty_arr(queue_arr *q_arr)
 {
     return (q_arr->curr_size == 0);
 }
+
+void memory_fragmentation_test(queue_list *q_list)
+{
+    node **freed_nodes = (node **)malloc(sizeof(node *) * 100);
+    node **reused_nodes = (node **)malloc(sizeof(node *) * 100);
+    
+    for (int i = 0; i < 100; i++)
+        push_list(q_list, 'a');
+    
+    for (int i = 0; i < 100; i++)
+        pop_list(q_list);
+
+    for (int i = 0; i < 100; i++)
+        push_list(q_list, 'a');
+
+    
+}

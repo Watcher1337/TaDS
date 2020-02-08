@@ -3,6 +3,7 @@
 #include "queue.h"
 #include "prints.h"
 #include "measures.h"
+#include "fragmentation_test.h"
 
 int main()
 {

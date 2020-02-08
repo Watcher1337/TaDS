@@ -10,7 +10,7 @@ void print_arr(queue_arr *queue_arr)
 int choose_menu(int *error)
 {
     int choice = 0;
-    printf("Choose one of the options: \n");
+    printf("\nChoose one of the options: \n");
     printf("1 - change request parameters\n");
     printf("2 - list processing\n");
     printf("3 - array processing\n");

@@ -4,6 +4,15 @@
 typedef struct queue_array queue_arr;
 typedef struct queue_list queue_list;
 typedef struct node node;
+typedef struct free_zone free_zone;
+
+struct free_zone
+{
+    void **free_area;
+
+    int freed;
+    int reused;
+};
 
 //Represents cycling queue through array
 struct queue_array
@@ -46,7 +55,7 @@ char pop_arr(queue_arr *q_arr);
 char pop_list(queue_list *q_list);
 
 int is_empty_list(queue_list *q_list);
-int is_emplty_arr(queue_arr *q_arr);
+int is_empty_arr(queue_arr *q_arr);
 
 void free_list(queue_list *q_list);
 void free_arr(queue_arr *q_arr);
@@ -54,5 +63,8 @@ void free_arr(queue_arr *q_arr);
 int is_empty_list(queue_list *q_list);
 int is_empty_arr(queue_arr *q_arr);
 
+void init_free_area();
+void free_free_area();
+void show_free_area();
 
 #endif

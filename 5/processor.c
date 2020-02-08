@@ -107,16 +107,10 @@ void set_default_request_params(request_params *params)
     params->process_amount_T1 = 1000;
 }
 
-void simulate_processing_array(request_params *params)
-{
-    printf("Simulating array processing...\n");
-
-    pause();
-}
-
 void simulate_processing_list(request_params *params)
 {
-    printf("Simulating list processing...\n");
+    init_free_area();
+    printf("Simulating list processing...\n\n");
     printf("| T1 requests | T1 queue length | T2 queue length | Average T1 length | Average T2 length |\n");
 
     queue_list *q_list_T1;
@@ -141,8 +135,6 @@ void simulate_processing_list(request_params *params)
     float time_idle = 0;
 
     int priority; // Flag to determine which queue is being processed
-    
-    time_t modelling_time_start = clock();
 
     // Initial data set-up
     time_T1 += gen_number(params->in_time_1_min, params->in_time_1_max);
@@ -171,8 +163,16 @@ void simulate_processing_list(request_params *params)
     // Prevents multiple output if out stays at 100 several iterations (example)
     int shown_flag = FALSE;
     
+    time_t modelling_time_start = clock();
+
     while (q_list_T1->out <= params->process_amount_T1)
     {
+        if (q_list_T1->curr_size > MAX_QUEUE_SIZE || q_list_T2->curr_size > MAX_QUEUE_SIZE)
+        {
+            printf("Queue reached max elements\n");
+            break;
+        }
+
         if (q_list_T1->out % 100 == 0 && q_list_T1->out > 0 && shown_flag == FALSE)
         {
             print_queue_list_status(q_list_T1, q_list_T2, q_list_T1->out, avg_len_T1 / priority_changes, 
@@ -187,6 +187,7 @@ void simulate_processing_list(request_params *params)
         if (priority == PRIORITY_T1)
         {
             pop_list(q_list_T1);
+
             // Time to process current request
             time_processing = gen_number(params->process_time_1_min, params->process_time_1_max);
             // General time to track all request's arrivals and priority switches
@@ -198,6 +199,7 @@ void simulate_processing_list(request_params *params)
         if (priority == PRIORITY_T2)
         {
             pop_list(q_list_T2);
+
             time_processing = gen_number(params->process_time_2_min, params->process_time_2_max);
             time_total_processing += time_processing;
             res_processing += time_processing;
@@ -291,10 +293,8 @@ void simulate_processing_list(request_params *params)
     time_t modelling_time_end = clock();
     int modelling_time_resulting = modelling_time_end - modelling_time_start;
 
-
-    // Should differ no more than 2-3% from theoretical calculations
     printf("\n-----------ACTUAL MEASUREMENTS--------------\n");
-    printf("Modelling time (ticks): %d\n", modelling_time_resulting);
+    printf("Time: %d ms\n\n", modelling_time_resulting);
     printf("Processing time (time units): %f\n", res_processing);
     printf("Processing Idle time (time units): %f\n", time_idle);
     printf("T1 requests in: %d\n", q_list_T1->in);
@@ -303,9 +303,192 @@ void simulate_processing_list(request_params *params)
     printf("T2 requests out: %d\n", q_list_T2->out);
 
     print_theoretical_data(params, q_list_T1->in, q_list_T2->in, res_processing);
+
+    show_free_area();
+    free_free_area();
+
     free_list(q_list_T1);
     free_list(q_list_T2);
-    //pause();
+}
+
+// Same process made with array queues
+void simulate_processing_array(request_params *params)
+{
+    printf("Simulating array processing...\n");
+    printf("| T1 requests | T1 queue length | T2 queue length | Average T1 length | Average T2 length |\n");
+
+    queue_arr q_arr_T1;
+    queue_arr q_arr_T2;
+
+    alloc_arr(&q_arr_T1, MAX_QUEUE_SIZE);
+    alloc_arr(&q_arr_T2, MAX_QUEUE_SIZE);
+
+    float time_T1 = 0;
+    float time_T2 = 0;
+
+    int priority_changes = 1;
+    int max_size = 0;
+
+    float avg_len_T1 = 0;
+    float avg_len_T2 = 0;
+
+    float time_processing;
+    float time_total_processing = 0;
+    float res_processing = 0;
+
+    float time_idle = 0;
+
+    int priority;
+
+    time_T1 += gen_number(params->in_time_1_min, params->in_time_1_max);
+    time_T2 += gen_number(params->in_time_2_min, params->in_time_2_max);
+
+    if (time_T1 < time_T2)
+    {
+        time_idle = fabs(0.f - time_T1);
+        time_total_processing = time_T1;
+        priority = PRIORITY_T1;
+    }
+    else
+    {
+        time_idle = fabs(0.f - time_T2);
+        time_total_processing = time_T2;
+        priority = PRIORITY_T2;
+    }
+
+    push_arr(&q_arr_T1, 'a');
+    push_arr(&q_arr_T2, 'a');
+
+    int shown_flag = FALSE;
+    
+    time_t modelling_time_start = clock();
+
+    while (q_arr_T1.out <= params->process_amount_T1)
+    {
+        if (q_arr_T1.curr_size > MAX_QUEUE_SIZE || q_arr_T2.curr_size > MAX_QUEUE_SIZE)
+        {
+            printf("Queue reached max elements\n");
+            break;
+        }
+
+        if (q_arr_T1.out % 100 == 0 && q_arr_T1.out > 0 && shown_flag == FALSE)
+        {
+            print_queue_arr_status(&q_arr_T1, &q_arr_T2, q_arr_T1.out, avg_len_T1 / priority_changes, 
+                                                                          avg_len_T2 / priority_changes);
+
+            shown_flag = TRUE;
+        }
+        else if (q_arr_T1.out % 100 != 0)
+            shown_flag = FALSE;
+
+        if (priority == PRIORITY_T1)
+        {
+            pop_arr(&q_arr_T1);
+
+            time_processing = gen_number(params->process_time_1_min, params->process_time_1_max);
+            time_total_processing += time_processing;
+            res_processing += time_processing;
+        }
+
+        if (priority == PRIORITY_T2)
+        {
+            pop_arr(&q_arr_T2);
+
+            time_processing = gen_number(params->process_time_2_min, params->process_time_2_max);
+            time_total_processing += time_processing;
+            res_processing += time_processing;
+        }
+
+        while (time_T1 < time_total_processing)
+        {
+            time_T1 += gen_number(params->in_time_1_min, params->in_time_1_max);
+
+            if (is_empty_arr(&q_arr_T1) && time_T1 > time_total_processing && priority == PRIORITY_T1)
+            {
+                if (!is_empty_arr(&q_arr_T2))
+                {
+                    priority = PRIORITY_T2;
+                    avg_len_T1 += max_size;
+                    max_size = q_arr_T2.curr_size;
+                    priority_changes++;
+                }
+            }
+
+            push_arr(&q_arr_T1, 'a');
+        }
+
+        while (time_T2 < time_total_processing)
+        {
+            time_T2 += gen_number(params->in_time_2_min, params->in_time_2_max);
+            
+            if (is_empty_arr(&q_arr_T2) && time_T2 > time_total_processing && priority == PRIORITY_T2)
+            {
+                if (!is_empty_arr(&q_arr_T1))
+                {
+                    priority = PRIORITY_T1;
+
+                    avg_len_T2 += max_size;
+                    max_size = q_arr_T1.curr_size;
+                    priority_changes++;
+                }
+            }
+
+            push_arr(&q_arr_T2, 'a');
+        }
+
+        if (q_arr_T1.curr_size == 1 && q_arr_T2.curr_size == 1)
+        {
+            if (time_T1 > time_T2 && priority == PRIORITY_T1)
+            {
+                priority = PRIORITY_T2;
+                avg_len_T1 += max_size;
+                max_size = q_arr_T2.curr_size;
+                priority_changes++;
+            }
+            else if (priority == PRIORITY_T2)
+            {
+                priority = PRIORITY_T1;
+                avg_len_T2 += max_size;
+                max_size = q_arr_T1.curr_size;
+                priority_changes++;
+            }
+        }   
+        
+        if (priority == PRIORITY_T1 && q_arr_T1.curr_size == 1)
+        {
+            if (time_total_processing < time_T1)
+            {
+                time_idle += time_T1 - time_total_processing;
+                time_total_processing = time_T1;
+            }
+        }
+        
+        if (priority == PRIORITY_T2 && q_arr_T2.curr_size == 1)
+        {
+            if (time_total_processing < time_T2)
+            {
+                time_idle += time_T2 - time_total_processing;
+                time_total_processing = time_T2;
+            }
+        }
+    }
+
+    time_t modelling_time_end = clock();
+    int modelling_time_resulting = modelling_time_end - modelling_time_start;
+
+    printf("\n-----------ACTUAL MEASUREMENTS--------------\n");
+    printf("Time: %d ms\n\n", modelling_time_resulting);
+    printf("Processing time (time units): %f\n", res_processing);
+    printf("Processing Idle time (time units): %f\n", time_idle);
+    printf("T1 requests in: %d\n", q_arr_T1.in);
+    printf("T1 requests out: %d\n", q_arr_T1.out);
+    printf("T2 requests in: %d\n", q_arr_T2.in);
+    printf("T2 requests out: %d\n", q_arr_T2.out);
+
+    print_theoretical_data(params, q_arr_T1.in, q_arr_T2.in, res_processing);
+
+    free_arr(&q_arr_T1);
+    free_arr(&q_arr_T2);
 }
 
 // random [min, max]
@@ -318,6 +501,11 @@ float gen_number(float min, float max)
 void print_queue_list_status(queue_list *q_list, queue_list *q_list_2, int req_num, int avg_len_1, int avg_len_2)
 {
     printf("|%13.d|%17.d|%17.d|%19.d|%19.d|\n", req_num, q_list->curr_size, q_list_2->curr_size, avg_len_1, avg_len_2);
+}
+
+void print_queue_arr_status(queue_arr *q_arr, queue_arr *q_arr_2, int req_num, int avg_len_1, int avg_len_2)
+{
+    printf("|%13.d|%17.d|%17.d|%19.d|%19.d|\n", req_num, q_arr->curr_size, q_arr_2->curr_size, avg_len_1, avg_len_2);
 }
 
 void pause() // pauses program
@@ -336,13 +524,9 @@ void clear() // clearing input stream to prevent input skips
 
 void print_theoretical_data(request_params *params, int requests_T1, int requests_T2, float proc_time)
 {
-    float arrival_T1 = (params->in_time_1_min + params->in_time_1_max) / 2;
-    float arrival_T2 = (params->in_time_2_min + params->in_time_2_max) / 2;
-
     float proc_time_th = (params->process_time_1_min + params->process_time_1_max) / 2 * params->process_amount_T1 +
                         (params->process_time_2_min + params->process_time_2_max / 2 * params->process_amount_T1 * 2);
-    float arrive_amount = proc_time / (arrival_T1 + arrival_T2); // T1 + T2 amount
-    
+
     // Theoretical measuerments
     printf("\nExpected processing time: %f\n", proc_time_th);
     printf("Processing difference: %.2f%%\n", 100 * fabs(proc_time - proc_time_th)/proc_time);

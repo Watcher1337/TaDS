@@ -1,6 +1,6 @@
 CC=gcc
 CFLAGS=-Wall -c 
-SOURCES=measures.c queue.c prints.c processor.c main.c includes.c fragmentation_test.c
+SOURCES=measures.c queue.c prints.c processor.c main.c includes.c
 OBJECTS=$(SOURCES:.c=.o)
 EXECUTABLE=app.out
 

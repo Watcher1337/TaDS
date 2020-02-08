@@ -1,6 +1,32 @@
 #include "includes.h"
 #include "queue.h"
 
+free_zone free_area;
+
+void init_free_area()
+{
+    free_area.free_area = calloc(MAX_QUEUE_SIZE, sizeof(void *));
+    free_area.freed = 0;
+    free_area.reused = 0;
+}
+
+void free_free_area()
+{
+    free(free_area.free_area);
+}
+
+void show_free_area()
+{
+    printf("Still available memory: %d\n", free_area.freed);
+    printf("Reused memory: %d\n", free_area.reused);
+
+    printf("Free adresses: \n");
+    for (int i = 0; i < (free_area.freed < 20 ? free_area.freed : 20); i++)
+    {
+        printf("%p\n", free_area.free_area[i]);
+    }
+}
+
 int alloc_arr(queue_arr *q_arr, int amount)
 {
     int error = ERROR_NONE;
@@ -16,11 +42,12 @@ int alloc_arr(queue_arr *q_arr, int amount)
         q_arr->p_out = q_arr->arr;
         q_arr->p_low = q_arr->arr; //Low border of cycling queue
         q_arr->p_high = q_arr->arr + amount; //High border
+        q_arr->in = 0;
+        q_arr->out = 0;
     }
 
     return error;
 }
-
 
 int push_arr(queue_arr *q_arr, char c)
 {
@@ -60,8 +87,6 @@ char pop_arr(queue_arr *q_arr)
     return ret;
 }
 
-// -------------------------------------------------------------------------------------------
-
 node *create_node(char a) 
 { 
     node *temp = (node*)malloc(sizeof(node)); 
@@ -79,12 +104,31 @@ queue_list *alloc_list()
     q->out = 0;
 
     return q;
-} 
+}
   
 void push_list(queue_list *q, char a) 
 { 
     node *temp = create_node(a); 
-  
+    int flag = FALSE;
+
+    for (int i = 0; i < free_area.freed; i++)
+    {
+        if (free_area.free_area[i] == (void *)temp)
+        {
+            free_area.free_area[i] = NULL;
+            flag = TRUE;
+        }
+
+        if (flag == TRUE)
+            free_area.free_area[i] = free_area.free_area[i+1];
+    }
+
+    if (flag == TRUE)
+    {
+        free_area.freed--;
+        free_area.reused++;
+    }
+
     if (q->rear == NULL) 
     { 
         q->curr_size++;
@@ -100,14 +144,14 @@ void push_list(queue_list *q, char a)
 } 
   
 char pop_list(queue_list *q) 
-{ 
-    char ret = 'x';
-
+{
+    node *temp;
+    char ret = 'x'; 
     if (q->front == NULL) 
         printf("queue is empty\n");
     else
     {
-        node *temp = q->front; 
+        temp = q->front; 
         ret = temp->data;
 
         q->front = q->front->next; 
@@ -115,9 +159,12 @@ char pop_list(queue_list *q)
         if (q->front == NULL) 
             q->rear = NULL; 
 
+        free_area.free_area[free_area.freed++] = (void *)temp;
+
+        free(temp);
         q->curr_size--;
         q->out++;
-        free(temp);
+        
     }
 
     return ret; 
@@ -144,21 +191,4 @@ int is_empty_list(queue_list *q_list)
 int is_empty_arr(queue_arr *q_arr)
 {
     return (q_arr->curr_size == 0);
-}
-
-void memory_fragmentation_test(queue_list *q_list)
-{
-    node **freed_nodes = (node **)malloc(sizeof(node *) * 100);
-    node **reused_nodes = (node **)malloc(sizeof(node *) * 100);
-    
-    for (int i = 0; i < 100; i++)
-        push_list(q_list, 'a');
-    
-    for (int i = 0; i < 100; i++)
-        pop_list(q_list);
-
-    for (int i = 0; i < 100; i++)
-        push_list(q_list, 'a');
-
-    
 }

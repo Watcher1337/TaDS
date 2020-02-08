@@ -9,7 +9,7 @@
 #define TRUE 1
 #define FALSE 0
 #define ARR_SIZE 100
-#define MAX_QUEUE_SIZE 250
+#define MAX_QUEUE_SIZE 10000
 
 #include <stdio.h>
 #include <string.h>
